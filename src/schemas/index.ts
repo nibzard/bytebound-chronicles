@@ -12,5 +12,5 @@ export * from './game.js';
 // Story validation schemas
 export * from './story.js';
 
-// AI validation schemas (to be implemented)
-// export * from './ai.js';
+// AI validation schemas
+export * from './ai.js';

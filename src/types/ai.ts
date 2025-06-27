@@ -135,21 +135,14 @@ export enum EscalationTriggerType {
 }
 
 export enum AIModelId {
-  GEMINI_2_0_FLASH_EXP = 'gemini-2.0-flash-exp',
-  GEMINI_2_0_THINKING_EXP = 'gemini-2.0-thinking-exp',
-  GEMINI_EXP_1206 = 'gemini-exp-1206',
-  GEMINI_1_5_FLASH = 'gemini-1.5-flash',
-  CLAUDE_3_5_SONNET = 'claude-3-5-sonnet-20241022',
-  CLAUDE_3_5_HAIKU = 'claude-3-5-haiku-20241022',
-}
-
-export interface GameContext {
-  currentBeat: StoryBeat;
-  recentInteractions: PlayerInteraction[];
-  gameState: GameState;
-  storyProgress: StoryProgress;
-  playerProfile: PlayerProfile;
-  sessionMetadata: SessionMetadata;
+  /**
+   * Role-based model assignments for game orchestration
+   * Models can be updated without changing application logic
+   */
+  PRIMARY_NARRATIVE = 'primary_narrative',           // Main storytelling and complex reasoning
+  FAST_INTENT = 'fast_intent',                      // High-speed intent detection and simple tasks
+  EMPATHETIC_ESCALATION = 'empathetic_escalation',  // User frustration handling with empathy
+  CREATIVE_ESCALATION = 'creative_escalation',      // Top-tier creative and complex scenarios
 }
 
 export interface PlayerProfile {
@@ -378,14 +371,88 @@ import type {
   StoryBeat,
   GameState,
   StoryProgress,
-  PlayerInteraction,
   GameDifficulty,
 } from './game.js';
+
+// Re-export PlayerInteraction for use in AI modules
+export type { PlayerInteraction } from './game.js';
+
+export interface GameContext {
+  currentBeat: StoryBeat;
+  recentInteractions: import('./game.js').PlayerInteraction[];
+  gameState: GameState;
+  storyProgress: StoryProgress;
+  playerProfile: PlayerProfile;
+  sessionMetadata: SessionMetadata;
+}
 
 // Utility types
 export type AIModelConfig = Record<AIModelId, ModelConfiguration>;
 
+// Default model configuration mapping (as of Q2 2025)
+export const DEFAULT_MODEL_CONFIG: AIModelConfig = {
+  [AIModelId.PRIMARY_NARRATIVE]: {
+    actualModelId: 'gemini-2.5-pro',
+    provider: 'google',
+    apiKey: process.env.GOOGLE_AI_API_KEY ?? '',
+    maxTokens: 8192,
+    temperature: 0.7,
+    timeout: 30,
+    retries: 3,
+    costPerToken: 0.00003,
+    capabilities: [
+      { type: 'text_generation', quality: 0.95, speed: 0.7, cost: 0.3 },
+      { type: 'reasoning', quality: 0.9, speed: 0.6, cost: 0.3 },
+    ],
+  },
+  [AIModelId.FAST_INTENT]: {
+    actualModelId: 'gemini-2.5-flash',
+    provider: 'google',
+    apiKey: process.env.GOOGLE_AI_API_KEY ?? '',
+    maxTokens: 2048,
+    temperature: 0.3,
+    timeout: 10,
+    retries: 2,
+    costPerToken: 0.000015,
+    capabilities: [
+      { type: 'text_generation', quality: 0.8, speed: 0.95, cost: 0.9 },
+      { type: 'function_calling', quality: 0.85, speed: 0.9, cost: 0.9 },
+    ],
+  },
+  [AIModelId.EMPATHETIC_ESCALATION]: {
+    actualModelId: 'claude-sonnet-4-20250514',
+    provider: 'anthropic',
+    apiKey: process.env.ANTHROPIC_API_KEY ?? '',
+    maxTokens: 4096,
+    temperature: 0.8,
+    timeout: 25,
+    retries: 3,
+    costPerToken: 0.00006,
+    capabilities: [
+      { type: 'text_generation', quality: 0.95, speed: 0.75, cost: 0.2 },
+      { type: 'reasoning', quality: 0.92, speed: 0.7, cost: 0.2 },
+    ],
+  },
+  [AIModelId.CREATIVE_ESCALATION]: {
+    actualModelId: 'claude-opus-4-20250514',
+    provider: 'anthropic',
+    apiKey: process.env.ANTHROPIC_API_KEY ?? '',
+    maxTokens: 4096,
+    temperature: 0.9,
+    timeout: 45,
+    retries: 2,
+    costPerToken: 0.00015,
+    capabilities: [
+      { type: 'text_generation', quality: 0.98, speed: 0.5, cost: 0.1 },
+      { type: 'reasoning', quality: 0.95, speed: 0.45, cost: 0.1 },
+      { type: 'multimodal', quality: 0.9, speed: 0.4, cost: 0.1 },
+    ],
+  },
+};
+
 export interface ModelConfiguration {
+  actualModelId: string;                 // The real model ID (e.g., 'gemini-2.5-pro', 'claude-sonnet-4-20250514')
+  provider: 'google' | 'anthropic';      // AI provider
   apiKey: string;
   endpoint?: string;
   maxTokens: number;

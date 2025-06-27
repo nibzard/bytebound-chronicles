@@ -495,7 +495,7 @@ export class HybridDatabase {
     return await fn(this);
   }
 
-  sqliteTransaction<T>(fn: () => T): T {.
+  sqliteTransaction<T>(fn: () => T): T {
     return this.sqlite.transaction(fn);
   }
 

@@ -1,12 +1,12 @@
 ![Bytebound Chronicles](./assets/bytebound_chronicles_small.png)
 
-# Bytebound Chronicles
+# Chronicles
 
-A Terminal LLM Adventure Game with intelligent AI orchestration.
+A Terminal LLM Adventure Game engine with intelligent AI orchestration.
 
 ## Overview
 
-Bytebound Chronicles is an interactive terminal-based adventure game that uses multiple AI models to create dynamic, engaging narratives. The game features intelligent AI model selection, spoiler-free story management, and real-time gameplay through WebSocket connections.
+Bytebound Chronicles is an interactive terminal-based adventure game engine that uses multiple AI models to create dynamic, engaging narratives. The game features intelligent AI model selection, spoiler-free story management, and real-time gameplay through WebSocket connections.
 
 ## Key Features
 
