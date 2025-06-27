@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Nikola Balic
+// MIT License
+
 /**
  * SQLite store implementation for structured data
  * Handles game saves, player profiles, analytics, and story metadata
