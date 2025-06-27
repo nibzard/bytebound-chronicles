@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Nikola Balic
+// MIT License
+
 /**
  * Validation schemas index
  * Re-exports all Zod validation schemas for easy importing

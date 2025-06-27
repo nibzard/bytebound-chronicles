@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Nikola Balic
+// MIT License
+
 /**
  * Core game type definitions
  * These types define the fundamental game structures and state management

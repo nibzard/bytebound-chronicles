@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Nikola Balic
+// MIT License
+
 /**
  * Story system type definitions
  * Defines the structure for story files, metadata, and content management

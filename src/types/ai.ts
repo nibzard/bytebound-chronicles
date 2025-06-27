@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Nikola Balic
+// MIT License
+
 /**
  * AI orchestration type definitions
  * Defines types for multi-model AI coordination, escalation, and response management

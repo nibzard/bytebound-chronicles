@@ -1,4 +1,7 @@
 
+// Copyright (c) 2025 Nikola Balic
+// MIT License
+
 import { z } from 'zod';
 import { StoryBeatSchema } from './game.js';
 
