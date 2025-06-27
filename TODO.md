@@ -108,19 +108,19 @@ stories/                   # Story files
 
 ### Core Type System
 
-- [ ] Define core game types and interfaces
+- [✅] Define core game types and interfaces
   - Priority: High
   - Estimated Time: 6 hours
   - Dependencies: Project setup
   - Testing: Type validation, JSON schema generation
   - Files: `src/types/game.ts`, `src/types/story.ts`, `src/types/ai.ts`
 
-- [ ] Create Zod validation schemas
+- [✅] Create Zod validation schemas
   - Priority: High
   - Estimated Time: 4 hours
   - Dependencies: Core types
   - Testing: Input validation, error handling
-  - Files: `src/schemas/`, `tests/unit/schemas/`
+  - Files: `src/schemas/`, `tests/unit/types/`
 
 ## Phase 2: AI Orchestration System (Week 3)
 
