@@ -1,5 +1,5 @@
 # Bytebound Chronicles
-## Terminal LLM Adventure Game - Complete Developer Specification (Revised)
+## Terminal LLM Adventure Game Engine - Complete Developer Specification (Revised)
 
 ## Table of Contents
 1. [Product Definition](#product-definition)

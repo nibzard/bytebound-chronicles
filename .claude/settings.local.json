@@ -9,7 +9,10 @@
       "Bash(git stash:*)",
       "Bash(git push:*)",
       "Bash(npm run test:unit:*)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Bash(npm install:*)",
+      "Bash(grep:*)",
+      "Bash(npm run typecheck:*)"
     ],
     "deny": []
   }

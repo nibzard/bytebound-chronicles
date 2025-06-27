@@ -2,7 +2,7 @@
 // MIT License
 
 /**
- * Bytebound Chronicles - Terminal LLM Adventure Game
+ * Bytebound Chronicles - Terminal LLM Adventure Game Engine
  * Main entry point for the application
  */
 
