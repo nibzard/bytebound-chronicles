@@ -71,21 +71,21 @@ stories/                   # Story files
 
 ### Database Foundation
 
-- [ ] Implement LMDB store for high-frequency data
+- [✅] Implement LMDB store for high-frequency data
   - Priority: High
   - Estimated Time: 8 hours
   - Dependencies: Project setup
   - Testing: CRUD operations, performance benchmarks
   - Files: `src/database/LMDBStore.ts`, `tests/unit/database/lmdb-store.test.ts`
 
-- [ ] Implement SQLite store for structured data
+- [✅] Implement SQLite store for structured data
   - Priority: High
   - Estimated Time: 6 hours
   - Dependencies: Project setup
   - Testing: Schema creation, migrations, queries
   - Files: `src/database/SQLiteStore.ts`, `tests/unit/database/sqlite-store.test.ts`
 
-- [ ] Create hybrid database service
+- [✅] Create hybrid database service
   - Priority: High
   - Estimated Time: 10 hours
   - Dependencies: LMDB and SQLite stores
@@ -108,19 +108,19 @@ stories/                   # Story files
 
 ### Core Type System
 
-- [ ] Define core game types and interfaces
+- [✅] Define core game types and interfaces
   - Priority: High
   - Estimated Time: 6 hours
   - Dependencies: Project setup
   - Testing: Type validation, JSON schema generation
   - Files: `src/types/game.ts`, `src/types/story.ts`, `src/types/ai.ts`
 
-- [ ] Create Zod validation schemas
+- [✅] Create Zod validation schemas
   - Priority: High
   - Estimated Time: 4 hours
   - Dependencies: Core types
   - Testing: Input validation, error handling
-  - Files: `src/schemas/`, `tests/unit/schemas/`
+  - Files: `src/schemas/`, `tests/unit/types/`
 
 ## Phase 2: AI Orchestration System (Week 3)
 

@@ -1,3 +1,5 @@
+![Bytebound Chronicles](./assets/bytebound_chronicles_small.png)
+
 # Bytebound Chronicles
 
 A Terminal LLM Adventure Game with intelligent AI orchestration.
