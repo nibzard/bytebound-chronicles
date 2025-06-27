@@ -160,11 +160,33 @@ NODE_ENV=             # development | production | test
 
 ## Development Workflow
 
-1. **Feature Development**: Start with failing tests (TDD approach)
-2. **AI Integration**: Test with mocked responses before live API calls
-3. **Database Changes**: Always include migrations and rollback scripts
-4. **Story Content**: Validate JSON format and test spoiler-free loading
-5. **Terminal UI**: Test across different terminal sizes and color schemes
+### Phase-Based Development Approach
+The project follows a structured 8-phase development cycle:
+1. **Foundation & Core Infrastructure** (Types, Database, Testing)
+2. **AI Orchestration System** (Multi-model integration, escalation)
+3. **Story Management System** (Progressive loading, validation)
+4. **API Development** (RESTful endpoints, WebSocket)
+5. **Terminal Client** (React Ink UI, real-time communication)
+6. **Testing & Quality Assurance** (Comprehensive test coverage)
+7. **Deployment & Documentation** (Production setup, guides)
+8. **Launch Preparation** (Final validation, monitoring)
+
+### Feature Development Process
+1. **Task Planning**: Use TodoWrite tool to create structured task breakdown
+2. **Implementation**: Build feature with comprehensive TypeScript types first
+3. **Testing**: Create unit tests with high coverage (aim for 90%+)
+4. **Validation**: Run typecheck, lint, and format before commits
+5. **Documentation**: Update TODO.md and relevant docs
+6. **Integration**: Test with existing systems and dependencies
+
+### Git Workflow Best Practices
+1. **Branch Strategy**: Create feature branches for all non-trivial work
+2. **Commit Standards**: Use conventional commits with clear descriptions
+3. **Testing Before Commits**: Always run tests and type checking
+4. **PR Process**: Use `gh pr create` with detailed descriptions
+5. **Auto-merge**: Use `gh pr merge --auto --merge` for immediate integration
+6. **Branch Cleanup**: Delete merged branches locally and remotely
+7. **Version Management**: Use semantic versioning based on feature scope
 
 ## Error Handling
 
@@ -176,10 +198,95 @@ NODE_ENV=             # development | production | test
 
 ## Development Best Practices
 
-- Use conventional commits, use branches for new features, and always push to github. You can use git and gh tools.
+### Code Quality Standards
+- **TypeScript First**: Define comprehensive types before implementation
+- **Type Safety**: Use strict TypeScript settings with no implicit any
+- **Validation**: Implement Zod schemas for runtime type checking
+- **Testing**: Maintain 90%+ test coverage with meaningful test cases
+- **Linting**: Follow ESLint rules with automatic fixing where possible
+- **Formatting**: Use Prettier for consistent code formatting
+
+### Architecture Principles
+- **Separation of Concerns**: Clear boundaries between layers (types, database, services, API)
+- **Hybrid Database Strategy**: Use LMDB for high-frequency operations, SQLite for structured data
+- **Progressive Loading**: Implement spoiler-free content delivery
+- **Error Resilience**: Graceful degradation and comprehensive error handling
+- **Performance Optimization**: Consider cost, latency, and scalability in design decisions
+
+### Development Tools and Automation
+- **Task Management**: Use TodoWrite/TodoRead tools for progress tracking
+- **Concurrent Development**: Batch tool calls for optimal performance
+- **Automated Testing**: Run tests before commits and in CI/CD
+- **Documentation Sync**: Keep README.md and TODO.md updated with progress
+- **Version Control**: Use semantic versioning aligned with feature scope
+
+### Communication and Collaboration
+- **Detailed Commit Messages**: Include context and reasoning in commits
+- **Comprehensive PR Descriptions**: Document changes, testing, and impact
+- **Progress Transparency**: Maintain visible progress indicators in documentation
+- **Knowledge Sharing**: Update CLAUDE.md with learnings and process improvements
+
+## Implementation Patterns
+
+### Database Layer Pattern
+```typescript
+// 1. Define comprehensive types first
+export interface PlayerProfile { /* ... */ }
+
+// 2. Create validation schemas
+export const PlayerProfileSchema = z.object({ /* ... */ });
+
+// 3. Implement stores with consistent interfaces
+export class SQLiteStore {
+  async createPlayerProfile(profile: PlayerProfile): Promise<void> { /* ... */ }
+}
+
+// 4. Create unified service layer
+export class HybridDatabase {
+  // Intelligent routing between stores
+}
+
+// 5. Comprehensive unit testing
+describe('PlayerProfile', () => {
+  it('should validate required fields', () => { /* ... */ });
+});
+```
+
+### Feature Development Pattern
+1. **TodoWrite**: Break down feature into specific tasks
+2. **Types**: Define TypeScript interfaces and types
+3. **Schemas**: Create Zod validation schemas
+4. **Implementation**: Build core functionality
+5. **Testing**: Unit tests with edge cases
+6. **Integration**: Test with existing systems
+7. **Documentation**: Update TODO.md and README.md
+8. **Commit**: Conventional commit with detailed message
+9. **PR**: Create PR with comprehensive description
+10. **Merge**: Auto-merge and cleanup branches
+
+### Quality Assurance Process
+- **Pre-commit**: Run `npm run typecheck && npm run lint && npm run test:unit`
+- **Pre-PR**: Ensure all tests pass and documentation is updated
+- **Post-merge**: Update version numbers using semantic versioning
+- **Phase completion**: Update progress indicators and documentation
 
 ## Memories and Guidance
 
-- Always keep TODO.md up to date. After every feature check if you need to update todo.md file.
-- Use semver and decide on when and how to increment based on the work you did.
-- Always use gh cli tool to create PR and merge it immediatelly.
+### Project Management
+- **TODO.md**: Always update after completing features or major changes
+- **Progress Tracking**: Use visual indicators (✅/🔄/⏳) for clear status
+- **Phase Planning**: Break work into manageable phases with clear deliverables
+- **Version Management**: Use semver (0.x.0 for phases, 0.0.x for features)
+
+### Git and GitHub Workflow
+- **Branch Naming**: Use descriptive prefixes (feat/, fix/, docs/, style/)
+- **Conventional Commits**: Follow standard format with clear scope and description
+- **PR Management**: Use `gh pr create` with detailed bodies and auto-merge
+- **Branch Cleanup**: Delete merged branches both locally and remotely
+- **Push Frequently**: Always push feature branches to origin for backup
+
+### Development Environment
+- **Tool Permissions**: Update .claude/settings.local.json for required tools
+- **Concurrent Operations**: Use parallel tool calls for better performance
+- **Error Handling**: Implement graceful degradation and retry logic
+- **Performance Monitoring**: Track database operations and AI model usage
