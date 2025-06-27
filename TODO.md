@@ -71,21 +71,21 @@ stories/                   # Story files
 
 ### Database Foundation
 
-- [ ] Implement LMDB store for high-frequency data
+- [✅] Implement LMDB store for high-frequency data
   - Priority: High
   - Estimated Time: 8 hours
   - Dependencies: Project setup
   - Testing: CRUD operations, performance benchmarks
   - Files: `src/database/LMDBStore.ts`, `tests/unit/database/lmdb-store.test.ts`
 
-- [ ] Implement SQLite store for structured data
+- [✅] Implement SQLite store for structured data
   - Priority: High
   - Estimated Time: 6 hours
   - Dependencies: Project setup
   - Testing: Schema creation, migrations, queries
   - Files: `src/database/SQLiteStore.ts`, `tests/unit/database/sqlite-store.test.ts`
 
-- [ ] Create hybrid database service
+- [✅] Create hybrid database service
   - Priority: High
   - Estimated Time: 10 hours
   - Dependencies: LMDB and SQLite stores

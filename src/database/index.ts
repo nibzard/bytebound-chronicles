@@ -1,12 +1,17 @@
 /**
- * Database layer index
- * Re-exports all database implementations
+ * Database layer exports
+ * Provides unified access to LMDB, SQLite, and hybrid database services
  */
 
-// Database implementations (to be implemented)
-// export * from './HybridDatabase.js';
-// export * from './LMDBStore.js';
-// export * from './SQLiteStore.js';
+export { LMDBStore, createLMDBStore, defaultLMDBConfig } from './LMDBStore.js';
+export { SQLiteStore, createSQLiteStore, defaultSQLiteConfig } from './SQLiteStore.js';
+export { HybridDatabase, createHybridDatabase, defaultHybridConfig } from './HybridDatabase.js';
 
-// Placeholder to make the file valid TypeScript
-export const databasePlaceholder = 'database';
+export type { LMDBConfig, LMDBStoreOptions } from './LMDBStore.js';
+export type { 
+  SQLiteConfig, 
+  SQLiteStoreOptions, 
+  PlayerProfile as DatabasePlayerProfile, 
+  GameAnalytics 
+} from './SQLiteStore.js';
+export type { HybridDatabaseConfig, DatabaseStats } from './HybridDatabase.js';

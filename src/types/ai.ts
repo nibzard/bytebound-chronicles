@@ -399,3 +399,14 @@ export interface ModelCapability {
   speed: number; // 0-1 scale
   cost: number; // 0-1 scale, lower is better
 }
+
+export interface AIModelUsage {
+  model: string;
+  taskType: string;
+  timestamp: number;
+  tokensUsed: number;
+  cost: number;
+  responseTime: number;
+  successful: boolean;
+  escalated: boolean;
+}

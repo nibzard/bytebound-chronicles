@@ -182,3 +182,4 @@ NODE_ENV=             # development | production | test
 
 - Always keep TODO.md up to date. After every feature check if you need to update todo.md file.
 - Use semver and decide on when and how to increment based on the work you did.
+- Always use gh cli tool to create PR and merge it immediatelly.
