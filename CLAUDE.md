@@ -173,3 +173,11 @@ NODE_ENV=             # development | production | test
 - Database errors include retry logic for transient failures
 - WebSocket disconnections trigger automatic reconnection
 - User frustration triggers empathetic AI model escalation
+
+## Development Best Practices
+
+- Use conventional commits, use branches for new features, and always push to github. You can use git and gh tools.
+
+## Memories and Guidance
+
+- Always keep TODO.md up to date. After every feature check if you need to update todo.md file.
