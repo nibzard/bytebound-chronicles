@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Nikola Balic
+// MIT License
+
 /**
  * Database layer exports
  * Provides unified access to LMDB, SQLite, and hybrid database services

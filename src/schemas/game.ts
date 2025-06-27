@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Nikola Balic
+// MIT License
+
 /**
  * Zod validation schemas for game types
  * These schemas provide runtime validation for game data structures

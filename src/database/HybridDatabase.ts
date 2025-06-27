@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Nikola Balic
+// MIT License
+
 /**
  * Hybrid Database Service
  * Combines LMDB (high-frequency operations) and SQLite (structured data) stores
@@ -492,7 +495,7 @@ export class HybridDatabase {
     return await fn(this);
   }
 
-  sqliteTransaction<T>(fn: () => T): T {
+  sqliteTransaction<T>(fn: () => T): T {.
     return this.sqlite.transaction(fn);
   }
 

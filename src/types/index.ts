@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Nikola Balic
+// MIT License
+
 /**
  * Type definitions index
  * Re-exports all type definitions for easy importing

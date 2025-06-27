@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Nikola Balic
+// MIT License
+
 /**
  * Bytebound Chronicles - Terminal LLM Adventure Game
  * Main entry point for the application

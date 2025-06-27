@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Nikola Balic
+// MIT License
+
 /**
  * LMDB store implementation for high-frequency gameplay data
  * Handles player interactions, AI responses, session context, and real-time game state
