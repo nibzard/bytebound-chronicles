@@ -14,7 +14,8 @@
       "Bash(grep:*)",
       "Bash(npm run typecheck:*)",
       "Bash(chmod:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npm test:*)"
     ],
     "deny": []
   }

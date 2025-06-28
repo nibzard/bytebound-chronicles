@@ -185,6 +185,17 @@ export class SQLiteStore {
       );
     `);
 
+    // Story catalog cache
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS story_catalog (
+        id INTEGER PRIMARY KEY,
+        catalog_data TEXT NOT NULL,
+        catalog_version TEXT NOT NULL,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
     // Create indexes for better query performance
     this.createIndexes();
   }
@@ -475,6 +486,42 @@ export class SQLiteStore {
       rating: row.rating,
       playCount: row.play_count,
     };
+  }
+
+  /**
+   * Story Catalog Management
+   */
+  async storeStoryCatalog(catalog: any): Promise<void> {
+    const stmt = this.db.prepare(`
+      INSERT OR REPLACE INTO story_catalog (
+        id, catalog_data, catalog_version, updated_at
+      ) VALUES (1, ?, ?, CURRENT_TIMESTAMP)
+    `);
+
+    stmt.run(
+      JSON.stringify(catalog),
+      catalog.catalogVersion || '1.0.0'
+    );
+  }
+
+  async getStoryCatalog(): Promise<any | null> {
+    const stmt = this.db.prepare('SELECT * FROM story_catalog WHERE id = 1');
+    const row = stmt.get() as any;
+
+    if (!row) return null;
+
+    try {
+      const catalog = JSON.parse(row.catalog_data);
+      return {
+        ...catalog,
+        catalogVersion: row.catalog_version,
+        lastUpdated: new Date(row.updated_at),
+        storedAt: new Date(row.created_at)
+      };
+    } catch (error) {
+      console.error('Failed to parse story catalog data:', error);
+      return null;
+    }
   }
 
   /**

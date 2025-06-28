@@ -288,3 +288,6 @@ describe('PlayerProfile', () => {
 - **Concurrent Operations**: Use parallel tool calls for better performance
 - **Error Handling**: Implement graceful degradation and retry logic
 - **Performance Monitoring**: Track database operations and AI model usage
+
+### Implementation Guidelines
+- Never do mock implementations. Always implement full implementation and check for mocks that needs to be implemented fully
