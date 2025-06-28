@@ -256,6 +256,15 @@ export class HybridDatabase {
     return await this.sqlite.getStoryMetadata(storyId);
   }
 
+  async storeStoryCatalog(catalog: any): Promise<void> {
+    // Store story catalog in SQLite for persistence
+    await this.sqlite.storeStoryCatalog(catalog);
+  }
+
+  async getStoryCatalog(): Promise<any | null> {
+    return await this.sqlite.getStoryCatalog();
+  }
+
   // Analytics
   async recordAnalytics(analytics: {
     id: string;
