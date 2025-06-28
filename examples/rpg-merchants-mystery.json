@@ -1,0 +1,802 @@
+{
+  "metadata": {
+    "id": "merchants-mystery-rpg",
+    "title": "The Missing Merchant",
+    "description": "A mysterious disappearance in a peaceful village leads to dark secrets in this classic fantasy RPG adventure.",
+    "author": "Bytebound Chronicles Team",
+    "version": "1.0.0",
+    "gameStyle": "rpg-fantasy",
+    "difficulty": "normal",
+    "estimatedLength": 120,
+    "tags": ["mystery", "fantasy", "investigation", "combat"],
+    "contentWarnings": ["mild violence", "supernatural themes"],
+    "playerInputMode": {
+      "primary": "hybrid",
+      "quickActionsEnabled": true,
+      "customActionAlwaysAvailable": true
+    }
+  },
+  "hiddenMechanics": {
+    "playerStats": {
+      "health": 100,
+      "stamina": 50,
+      "trust": 0,
+      "courage": 50,
+      "knowledge": 0,
+      "reputation": 30,
+      "strength": 10,
+      "intelligence": 10,
+      "charisma": 10,
+      "agility": 10
+    },
+    "thresholds": {
+      "lowHealth": 30,
+      "highTrust": 70,
+      "lowTrust": -30,
+      "highKnowledge": 5,
+      "heroicReputation": 80
+    },
+    "relationships": {
+      "elder_thomsen": 0,
+      "rhea_keeper": 0,
+      "village_general": 0
+    },
+    "difficultyModifiers": {
+      "easy": {
+        "statMultipliers": {
+          "health": 1.5,
+          "stamina": 1.3
+        },
+        "skillCheckBonus": 2,
+        "resourceModifier": 1.2
+      },
+      "normal": {
+        "statMultipliers": {},
+        "skillCheckBonus": 0,
+        "resourceModifier": 1.0
+      },
+      "hard": {
+        "statMultipliers": {
+          "health": 0.8,
+          "stamina": 0.8
+        },
+        "skillCheckBonus": -2,
+        "resourceModifier": 0.8
+      }
+    }
+  },
+  "beats": [
+    {
+      "id": "village_arrival",
+      "act": 1,
+      "title": "Arrival at Millhaven",
+      "description": "You arrive at the small village of Millhaven as storm clouds gather overhead.",
+      "setting": {
+        "location": "village_entrance",
+        "timeOfDay": "evening",
+        "weather": "approaching storm",
+        "atmosphere": "tense, foreboding"
+      },
+      "narrativeGuidance": {
+        "openingText": "You stand at the edge of Millhaven, a quaint village nestled in the shadows of whispering woods. The evening air is heavy with the promise of rain, and the villagers seem to hurry past with downcast eyes.",
+        "dynamicElements": {
+          "highTrust": "Some villagers nod in acknowledgment as you pass.",
+          "lowTrust": "Villagers quickly shut their doors and windows at your approach.",
+          "lowHealth": "You lean against a fence post, trying to hide your obvious injuries."
+        }
+      },
+      "quickActions": [
+        {
+          "id": "approach_calmly",
+          "label": "Enter the village peacefully",
+          "description": "Walk in with a non-threatening demeanor",
+          "icon": "🚶",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "trust": 10,
+              "reputation": 5
+            },
+            "narrative": "gentle_approach"
+          }
+        },
+        {
+          "id": "observe_surroundings",
+          "label": "Carefully observe your surroundings",
+          "description": "Take time to study the village before entering",
+          "icon": "👀",
+          "visible": true,
+          "requirements": [
+            {
+              "type": "stat",
+              "condition": "intelligence",
+              "value": 8,
+              "operator": ">="
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "knowledge": 1
+            },
+            "revealsAction": "investigate_tracks"
+          }
+        },
+        {
+          "id": "talk_elder",
+          "label": "Approach the elderly man by the gate",
+          "description": "Speak with the village elder",
+          "icon": "🗣️",
+          "visible": true,
+          "effects": {
+            "progressStory": true,
+            "narrative": "elder_conversation"
+          }
+        },
+        {
+          "id": "investigate_tracks",
+          "label": "Examine the wagon tracks",
+          "description": "Investigate the strange marks on the ground",
+          "icon": "🔍",
+          "visible": false,
+          "requirements": [
+            {
+              "type": "stat",
+              "condition": "knowledge",
+              "value": 1,
+              "operator": ">="
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "knowledge": 1
+            },
+            "addsItem": "blood_stain_evidence"
+          }
+        }
+      ],
+      "objectives": [
+        {
+          "id": "enter_village",
+          "description": "Enter the village",
+          "type": "required",
+          "visible": true,
+          "weight": 1,
+          "rewards": {
+            "experience": 10
+          }
+        },
+        {
+          "id": "learn_situation",
+          "description": "Find out what's happening",
+          "type": "required",
+          "visible": true,
+          "weight": 2,
+          "rewards": {
+            "experience": 15,
+            "statBonus": {
+              "reputation": 5
+            }
+          }
+        }
+      ],
+      "encounters": [
+        {
+          "id": "village_dog",
+          "type": "random",
+          "chance": 0.3,
+          "description": "A mangy dog blocks your path, growling suspiciously",
+          "quickActions": [
+            {
+              "id": "calm_dog",
+              "label": "Offer food to calm the dog",
+              "requirements": [
+                {
+                  "type": "item",
+                  "condition": "food_ration"
+                }
+              ],
+              "effects": {
+                "statChanges": {
+                  "trust": 5
+                },
+                "removesItem": "food_ration"
+              }
+            },
+            {
+              "id": "intimidate_dog",
+              "label": "Scare the dog away",
+              "requirements": [
+                {
+                  "type": "stat",
+                  "condition": "strength",
+                  "value": 12
+                }
+              ],
+              "effects": {
+                "statChanges": {
+                  "reputation": -5
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "skillChecks": [
+        {
+          "trigger": "observe_surroundings",
+          "stat": "intelligence",
+          "difficulty": 12,
+          "successText": "You notice fresh wagon tracks leading away from the main road, and something dark staining the cobblestones.",
+          "failureText": "The gathering darkness makes it hard to see details clearly.",
+          "criticalSuccess": {
+            "threshold": 18,
+            "text": "Your keen eyes spot not just wagon tracks, but bloodstains and signs of a struggle. Someone was dragged from this spot.",
+            "effects": {
+              "statChanges": {
+                "knowledge": 2
+              },
+              "addsItem": "struggle_evidence"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "tavern_investigation",
+      "act": 1,
+      "title": "The Tarnished Tankard",
+      "description": "The village tavern holds secrets and potential allies.",
+      "setting": {
+        "location": "tavern_interior",
+        "timeOfDay": "night",
+        "atmosphere": "warm but tense"
+      },
+      "entryRequirements": [
+        {
+          "type": "objective",
+          "condition": "enter_village",
+          "value": true
+        }
+      ],
+      "narrativeGuidance": {
+        "openingText": "The tavern's warmth is a welcome relief from the growing storm outside. A red-haired woman tends the bar while a few locals nurse their drinks in shadowy corners.",
+        "dynamicElements": {
+          "highTrust": "The patrons seem accepting of your presence, some even nodding in greeting.",
+          "lowTrust": "Conversations stop as you enter, and suspicious eyes follow your every move."
+        }
+      },
+      "quickActions": [
+        {
+          "id": "order_drink",
+          "label": "Order a drink to blend in",
+          "description": "Try to gain trust by acting like a regular patron",
+          "icon": "🍺",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "trust": 15,
+              "stamina": 10
+            },
+            "narrative": "casual_approach"
+          }
+        },
+        {
+          "id": "question_keeper",
+          "label": "Ask Rhea about Garrett",
+          "description": "Direct questioning about the merchant",
+          "icon": "❓",
+          "visible": true,
+          "requirements": [
+            {
+              "type": "objective",
+              "condition": "learn_situation",
+              "value": true
+            }
+          ],
+          "effects": {
+            "progressStory": true,
+            "narrative": "rhea_info"
+          }
+        },
+        {
+          "id": "search_table",
+          "label": "Search Garrett's usual table",
+          "description": "Look for clues where he last sat",
+          "icon": "🔍",
+          "visible": false,
+          "requirements": [
+            {
+              "type": "flag",
+              "condition": "rhea_mentioned_table"
+            }
+          ],
+          "effects": {
+            "addsItem": "merchants_ledger"
+          }
+        }
+      ],
+      "hiddenTriggers": [
+        {
+          "condition": {
+            "type": "stat",
+            "condition": "trust",
+            "value": 30,
+            "operator": ">="
+          },
+          "effect": "rhea_reveals_secret",
+          "description": "Rhea trusts you enough to share important information",
+          "narrative": "Rhea leans in conspiratorially and begins to share what she really knows."
+        }
+      ]
+    },
+    {
+      "id": "darkwood_confrontation",
+      "act": 2,
+      "title": "Into the Darkwood",
+      "description": "The cursed forest holds the key to the mystery.",
+      "setting": {
+        "location": "darkwood_entrance",
+        "timeOfDay": "night",
+        "atmosphere": "oppressive, supernatural"
+      },
+      "entryRequirements": [
+        {
+          "type": "item",
+          "condition": "merchants_ledger"
+        }
+      ],
+      "narrativeGuidance": {
+        "openingText": "The forest looms before you, darker than the night itself. An unnatural silence hangs in the air, broken only by the distant sound of something large moving through the underbrush.",
+        "moodProgression": [
+          "Tension builds as you enter the woods",
+          "Strange sounds echo from the depths",
+          "The true horror reveals itself"
+        ]
+      },
+      "quickActions": [
+        {
+          "id": "use_torch",
+          "label": "Light a torch for visibility",
+          "description": "Improve visibility but risk detection",
+          "icon": "🔦",
+          "visible": true,
+          "requirements": [
+            {
+              "type": "item",
+              "condition": "torch"
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "courage": 10
+            },
+            "narrative": "torch_light"
+          }
+        },
+        {
+          "id": "stealth_approach",
+          "label": "Move stealthily through the woods",
+          "description": "Avoid detection by moving carefully",
+          "icon": "🤫",
+          "visible": true,
+          "requirements": [
+            {
+              "type": "stat",
+              "condition": "agility",
+              "value": 12
+            }
+          ],
+          "effects": {
+            "narrative": "stealth_success"
+          }
+        },
+        {
+          "id": "confront_watcher",
+          "label": "Face the Watcher directly",
+          "description": "Confront the creature head-on",
+          "icon": "⚔️",
+          "visible": false,
+          "requirements": [
+            {
+              "type": "stat",
+              "condition": "courage",
+              "value": 70
+            }
+          ],
+          "effects": {
+            "triggersEvent": "watcher_combat"
+          }
+        }
+      ],
+      "encounters": [
+        {
+          "id": "watcher_combat",
+          "type": "triggered",
+          "description": "The Watcher emerges from the shadows - a twisted creature with three glowing eyes",
+          "quickActions": [
+            {
+              "id": "attack_eyes",
+              "label": "Target the glowing eyes",
+              "effects": {
+                "narrative": "precision_strike"
+              }
+            },
+            {
+              "id": "use_sporebane",
+              "label": "Use the mysterious vial",
+              "requirements": [
+                {
+                  "type": "item",
+                  "condition": "sporebane_vial"
+                }
+              ],
+              "effects": {
+                "narrative": "vial_success",
+                "removesItem": "sporebane_vial"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "characters": [
+    {
+      "id": "elder_thomsen",
+      "name": "Elder Thomsen",
+      "description": "A weathered man with knowing eyes and secrets behind his careful words",
+      "personality": ["wise", "secretive", "protective", "suspicious"],
+      "role": "informant",
+      "stats": {
+        "health": 40,
+        "charisma": 16,
+        "intelligence": 18
+      },
+      "knowledge": ["village_history", "merchant_routes", "old_legends", "watcher_lore"],
+      "secrets": ["knows_about_watcher", "suspicious_of_merchant", "protecting_village"],
+      "dialogueTrees": {
+        "initial_meeting": {
+          "text": "Storm's coming, stranger. And not just the kind that soaks your boots. If you're here about Garrett, you're walking into something dark.",
+          "playerOptions": [
+            {
+              "text": "Tell me about Garrett",
+              "effects": {
+                "statChanges": {
+                  "knowledge": 1
+                }
+              },
+              "leadsTo": "garrett_info"
+            },
+            {
+              "text": "I can handle myself",
+              "requirements": [
+                {
+                  "type": "stat",
+                  "condition": "charisma",
+                  "value": 12
+                }
+              ],
+              "effects": {
+                "statChanges": {
+                  "reputation": 5
+                }
+              },
+              "leadsTo": "respect_earned"
+            }
+          ]
+        },
+        "garrett_info": {
+          "text": "Garrett was... troubled. Asked too many questions about things better left alone. Last seen at the Tankard three nights past. Never made it to the crossroads.",
+          "reveals": ["tavern_location", "garrett_curiosity"]
+        }
+      }
+    },
+    {
+      "id": "rhea_keeper",
+      "name": "Rhea",
+      "description": "The tavern keeper with sharp eyes and hidden courage",
+      "personality": ["observant", "protective", "secretly_brave", "intuitive"],
+      "role": "ally",
+      "stats": {
+        "health": 60,
+        "intelligence": 14,
+        "charisma": 16
+      },
+      "knowledge": ["local_gossip", "merchant_habits", "herb_lore", "village_secrets"],
+      "companionAbilities": [
+        {
+          "id": "herbal_remedy",
+          "name": "Herbal Healing",
+          "description": "Rhea can brew healing potions from forest herbs",
+          "type": "active",
+          "cooldown": "per_beat"
+        },
+        {
+          "id": "local_knowledge",
+          "name": "Village Insider",
+          "description": "Provides hints and reveals hidden paths",
+          "type": "passive"
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "merchants_ledger",
+      "name": "Garrett's Ledger",
+      "description": "A leather-bound journal filled with trade records and increasingly frantic notes",
+      "type": "quest_item",
+      "properties": ["readable", "evidence"],
+      "effects": {
+        "narrative": "reveals_darkwood_connection",
+        "revealsInformation": ["watcher_references", "route_changes", "fear_entries"],
+        "unlocksPath": "darkwood_investigation"
+      }
+    },
+    {
+      "id": "sporebane_vial",
+      "name": "Vial of Sporebane",
+      "description": "A glowing green liquid that Rhea insists you'll need in the forest",
+      "type": "consumable",
+      "properties": ["usable", "magical"],
+      "uses": 1,
+      "effects": {
+        "narrative": "supernatural_weapon",
+        "statModifiers": {
+          "courage": 20
+        }
+      },
+      "combatProperties": {
+        "damage": "2d6+5",
+        "special": ["blinds_supernatural", "area_effect"]
+      }
+    },
+    {
+      "id": "village_sword",
+      "name": "Millhaven Blade",
+      "description": "A well-maintained sword with silver inlay, blessed by the village priest",
+      "type": "weapon",
+      "properties": ["equippable", "blessed"],
+      "requirements": [
+        {
+          "type": "stat",
+          "condition": "strength",
+          "value": 10
+        }
+      ],
+      "combatProperties": {
+        "damage": "1d8+2",
+        "special": ["silver_edged", "blessed_against_undead"]
+      },
+      "effects": {
+        "statModifiers": {
+          "courage": 10
+        }
+      }
+    },
+    {
+      "id": "blood_stain_evidence",
+      "name": "Bloodstained Cloth",
+      "description": "A piece of fabric with dark stains, clearly from a struggle",
+      "type": "clue",
+      "properties": ["evidence"],
+      "effects": {
+        "revealsInformation": ["violence_occurred", "struggle_location"]
+      }
+    }
+  ],
+  "endings": [
+    {
+      "id": "hero_ending",
+      "title": "The Village Hero",
+      "description": "You save the village and become a local legend",
+      "category": "good",
+      "requirements": [
+        {
+          "type": "stat",
+          "condition": "reputation",
+          "value": 80,
+          "operator": ">="
+        },
+        {
+          "type": "objective",
+          "condition": "defeat_watcher"
+        },
+        {
+          "type": "stat",
+          "condition": "trust",
+          "value": 70,
+          "operator": ">="
+        }
+      ],
+      "narrative": "The village of Millhaven celebrates your victory. The Watcher's defeat has lifted a curse that plagued the region for generations. Elder Thomsen reveals the true history, and Rhea's tavern becomes a shrine to your heroics. You are forever welcome here.",
+      "consequences": {
+        "worldState": "Village is safe and prosperous",
+        "characterFates": {
+          "rhea_keeper": "Becomes village leader",
+          "elder_thomsen": "Reveals all secrets, dies peacefully"
+        },
+        "playerLegacy": "Remembered as the Hero of Millhaven"
+      },
+      "rewards": {
+        "experience": 1000,
+        "items": ["hero_medallion", "blessed_sword"],
+        "achievements": ["village_savior", "watcher_slayer"],
+        "unlocks": ["new_game_plus", "sequel_access"]
+      }
+    },
+    {
+      "id": "bitter_victory",
+      "title": "The Price of Truth",
+      "description": "You uncover the truth but at great personal cost",
+      "category": "neutral",
+      "requirements": [
+        {
+          "type": "objective",
+          "condition": "defeat_watcher"
+        },
+        {
+          "type": "stat",
+          "condition": "health",
+          "value": 30,
+          "operator": "<="
+        }
+      ],
+      "narrative": "The Watcher falls, but your injuries are severe. You've saved the village, but the cost was almost too high. As you recover, you realize some mysteries are better left buried.",
+      "consequences": {
+        "worldState": "Village safe but forever changed",
+        "playerLegacy": "A hero who paid the ultimate price"
+      }
+    },
+    {
+      "id": "dark_bargain",
+      "title": "In Service of Shadows",
+      "description": "You make a deal with forces beyond understanding",
+      "category": "bad",
+      "requirements": [
+        {
+          "type": "choice",
+          "condition": "accept_watcher_bargain"
+        },
+        {
+          "type": "stat",
+          "condition": "courage",
+          "value": 30,
+          "operator": "<="
+        }
+      ],
+      "narrative": "Fear overcomes you in the final moment. You accept the Watcher's offer of power in exchange for service. The village is spared, but at the cost of your humanity.",
+      "consequences": {
+        "worldState": "Village safe but under dark protection",
+        "playerLegacy": "Becomes the new guardian of dark secrets"
+      }
+    }
+  ],
+  "aiGuidance": {
+    "toneProgression": {
+      "act1": "mysterious and foreboding, building tension through investigation",
+      "act2": "darker and more urgent, supernatural elements emerging",
+      "climax": "intense confrontation with forces beyond mortal understanding"
+    },
+    "narrativeStyle": {
+      "perspective": "second-person",
+      "tense": "present",
+      "descriptiveLevel": "moderate"
+    },
+    "playerAgency": "Always allow creative solutions beyond the quick actions. Reward clever thinking and problem-solving. Players should feel their choices matter.",
+    "mechanicsHandling": "Never mention numbers or stats to the player. Describe effects narratively - 'you feel more confident' instead of '+10 courage'.",
+    "responseToPlayerMood": {
+      "aggressive": "NPCs become defensive or hostile, some respect shown for directness",
+      "cautious": "NPCs appreciate careful approach, more secrets revealed",
+      "friendly": "Opens up social options, characters more willing to help",
+      "reckless": "Consequences are swift and sometimes severe"
+    },
+    "encouragedElements": [
+      "Environmental storytelling through descriptions",
+      "Character development through dialogue choices",
+      "Gradual revelation of supernatural elements",
+      "Player agency in problem-solving"
+    ],
+    "forbiddenTopics": [
+      "Graphic violence beyond fantasy adventure levels",
+      "Explicit content",
+      "Real-world political references"
+    ]
+  },
+  "functionCalls": [
+    {
+      "name": "updatePlayerStats",
+      "description": "Update player's hidden stats based on actions and choices",
+      "parameters": {
+        "health": "number (-100 to 100) - physical condition",
+        "stamina": "number (-50 to 50) - energy for special actions",
+        "trust": "number (-100 to 100) - how villagers perceive player",
+        "courage": "number (-100 to 100) - bravery in dangerous situations",
+        "knowledge": "number (0 to 10) - clues and information gathered",
+        "reputation": "number (-100 to 100) - standing in community",
+        "strength": "number (1 to 20) - physical power",
+        "intelligence": "number (1 to 20) - reasoning and perception",
+        "charisma": "number (1 to 20) - social skills",
+        "agility": "number (1 to 20) - speed and dexterity"
+      },
+      "examples": [
+        {
+          "situation": "Player helps elderly villager",
+          "call": {
+            "trust": 10,
+            "reputation": 5,
+            "charisma": 1
+          }
+        },
+        {
+          "situation": "Player fights supernatural creature",
+          "call": {
+            "courage": 15,
+            "health": -20,
+            "stamina": -10
+          }
+        }
+      ]
+    },
+    {
+      "name": "addItem",
+      "description": "Give item to player inventory",
+      "parameters": {
+        "itemId": "string - ID of item to add"
+      }
+    },
+    {
+      "name": "removeItem",
+      "description": "Remove item from player inventory",
+      "parameters": {
+        "itemId": "string - ID of item to remove"
+      }
+    },
+    {
+      "name": "progressStory",
+      "description": "Move to next story beat or unlock new content",
+      "parameters": {
+        "beatId": "string - ID of beat to transition to",
+        "transition": "string - narrative transition description"
+      }
+    },
+    {
+      "name": "unlockQuickAction",
+      "description": "Make a hidden quick action visible to player",
+      "parameters": {
+        "actionId": "string - ID of action to reveal"
+      }
+    },
+    {
+      "name": "checkCondition",
+      "description": "Check if player meets requirements for actions or story branches",
+      "parameters": {
+        "condition": "string - condition to check",
+        "value": "any - value to compare against"
+      },
+      "restrictions": [
+        "Don't use for obvious checks the player should know",
+        "Avoid checking same condition repeatedly"
+      ]
+    },
+    {
+      "name": "triggerSkillCheck",
+      "description": "Initiate a stat-based challenge",
+      "parameters": {
+        "stat": "string - which stat to test",
+        "difficulty": "number - target number to beat",
+        "context": "string - what the check represents"
+      }
+    }
+  ],
+  "gameSettings": {
+    "saveSystem": {
+      "autosaveEnabled": true,
+      "checkpointBeats": ["village_arrival", "tavern_investigation", "darkwood_confrontation"]
+    },
+    "timeManagement": {
+      "realTimeEvents": false,
+      "timePressure": false
+    }
+  }
+}

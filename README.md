@@ -53,6 +53,13 @@ Bytebound Chronicles is an interactive terminal-based adventure game engine that
 - Professional prompt templating using Handlebars
 - Comprehensive type safety with Zod response validation
 
+✅ **Phase 2.5 Complete: Universal Game Schema**
+- Comprehensive JSON schema supporting all game styles (RPG, Horror, Heist, Time-Loop, etc.)
+- Complete TypeScript types and runtime validation with Zod
+- CLI validation tools and developer utilities
+- Example games demonstrating different genres and mechanics
+- Migration guide from MVP to production schema
+
 🔄 **Current Phase: Story Management System**
 - Progressive story loading to prevent spoilers
 - Story metadata and beat management
@@ -95,11 +102,39 @@ npm run lint       # Code quality check
 - ✅ Player management and game save system
 - ✅ Multi-model AI orchestration with intelligent escalation
 - ✅ Professional prompt templating and response validation
+- ✅ Universal game schema with TypeScript types and validation
 - 🚧 Story management system (in progress)
 - ⏳ API endpoints and WebSocket integration
 - ⏳ Terminal client interface
 
-**Overall Progress: 25% Complete (2 of 8 phases)**
+**Overall Progress: 30% Complete (2.5 of 8 phases)**
+
+## Universal Game Schema
+
+The project now includes a comprehensive universal JSON schema that supports multiple game styles within the Bytebound Chronicles engine:
+
+### Supported Game Styles
+- **RPG Fantasy**: Traditional role-playing adventures with stats and character progression
+- **Horror**: Atmospheric horror experiences with sanity and fear mechanics
+- **Heist**: Strategic crime scenarios with reputation and crew dynamics
+- **Time-Loop**: Temporal mechanics with knowledge accumulation across resets
+- **Romance**: Character relationship focus with emotional stat tracking
+- **Sci-Fi**: Science fiction settings with technology and faction systems
+
+### Schema Features
+- **Hidden Mechanics Engine**: Invisible stat tracking that drives narrative adaptation
+- **AI-Driven Storytelling**: Comprehensive AI guidance for consistent behavior
+- **Player Agency**: Both structured quick actions and free-form creative input
+- **Progressive Content**: Spoiler-free story revelation based on player progress
+- **Type Safety**: Complete TypeScript types with runtime Zod validation
+- **CLI Validation**: Developer tools for game quality assurance
+
+### Schema Files
+- [`bytebound-schema-v1.json`](./bytebound-schema-v1.json) - Main universal schema definition
+- [`src/validation/game-schema-types.ts`](./src/validation/game-schema-types.ts) - TypeScript type definitions
+- [`src/validation/game-schema-validator.ts`](./src/validation/game-schema-validator.ts) - Zod runtime validation
+- [`MVP_SCHEMA_MIGRATION.md`](./MVP_SCHEMA_MIGRATION.md) - Migration guide from MVP format
+- [`examples/`](./examples/) - Example games demonstrating different genres
 
 ## Documentation
 

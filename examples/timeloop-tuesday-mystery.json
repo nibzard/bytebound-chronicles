@@ -1,0 +1,1097 @@
+{
+  "metadata": {
+    "id": "tuesday-loop-mystery",
+    "title": "Tuesday, Again",
+    "description": "Trapped in a time loop at a tech conference where someone always dies at exactly 11:47 PM.",
+    "author": "Bytebound Chronicles Team",
+    "version": "1.0.0",
+    "gameStyle": "time-loop-mystery",
+    "difficulty": "expert",
+    "estimatedLength": 200,
+    "tags": ["mystery", "time-travel", "investigation", "psychological", "thriller"],
+    "contentWarnings": ["death", "time paradox themes", "existential concepts", "psychological pressure"],
+    "playerInputMode": {
+      "primary": "hybrid",
+      "quickActionsEnabled": true,
+      "customActionAlwaysAvailable": true
+    }
+  },
+  "hiddenMechanics": {
+    "playerStats": {
+      "loop_knowledge": 0,
+      "timeline_stability": 100,
+      "sanity": 100,
+      "clues_discovered": 0,
+      "perfect_memory": 0,
+      "temporal_exhaustion": 0
+    },
+    "relationships": {
+      "alex_rivera": 0,
+      "sarah_chen": 0,
+      "marcus_webb": 0,
+      "diana_kessler": 0,
+      "conference_organizer": 0
+    },
+    "thresholds": {
+      "loop_mastery": 75,
+      "breaking_point": 25,
+      "critical_knowledge": 15,
+      "timeline_damage": 30,
+      "perfect_loop": 90
+    },
+    "gameSpecificMechanics": {
+      "loopTracking": {
+        "currentLoop": 1,
+        "maxLoops": 100,
+        "timeReset": "Tuesday, 6:00 AM",
+        "deathTime": "Tuesday, 11:47 PM",
+        "eventMemory": "persistent",
+        "loopTriggers": ["death_witnessed", "midnight_passed", "reality_break"]
+      },
+      "suspectProfiles": {
+        "alex_rivera": {
+          "suspicion_level": 0,
+          "alibis_checked": 0,
+          "secrets_revealed": 0
+        },
+        "marcus_webb": {
+          "suspicion_level": 0,
+          "alibis_checked": 0,
+          "secrets_revealed": 0
+        },
+        "diana_kessler": {
+          "suspicion_level": 0,
+          "alibis_checked": 0,
+          "secrets_revealed": 0
+        }
+      }
+    },
+    "difficultyModifiers": {
+      "expert": {
+        "statMultipliers": {
+          "sanity": 0.7,
+          "timeline_stability": 0.8
+        },
+        "skillCheckBonus": -5,
+        "resourceModifier": 0.6
+      }
+    }
+  },
+  "beats": [
+    {
+      "id": "first_loop",
+      "act": 1,
+      "title": "Another Tuesday Morning",
+      "description": "TechCon 2024 begins like any other conference day - or so you think.",
+      "setting": {
+        "location": "hotel_room_237",
+        "timeOfDay": "6:00 AM",
+        "atmosphere": "normal conference excitement"
+      },
+      "narrativeGuidance": {
+        "openingText": "Your phone alarm jolts you awake in the Hampton Inn. TechCon 2024 starts today, and you're presenting your AI ethics paper at 3 PM. The coffee maker gurgles to life, rain patters against the window, and you have no idea this Tuesday will repeat until you solve a murder.",
+        "dynamicElements": {
+          "first_loop": "Everything feels normal and routine. You're focused on your presentation and networking opportunities.",
+          "later_loops": "The familiar sounds of the alarm and coffee maker fill you with existential dread."
+        }
+      },
+      "quickActions": [
+        {
+          "id": "normal_routine",
+          "label": "Follow your usual morning routine",
+          "description": "Shower, dress, and prepare for the conference",
+          "icon": "🚿",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "timeline_stability": 5
+            },
+            "narrative": "establish_baseline"
+          }
+        },
+        {
+          "id": "rush_breakfast",
+          "label": "Skip routine and head to breakfast",
+          "description": "Get to the conference early",
+          "icon": "🍳",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "timeline_stability": -2
+            },
+            "narrative": "early_bird_advantage"
+          }
+        },
+        {
+          "id": "explore_hotel",
+          "label": "Take time to explore the hotel",
+          "description": "Familiarize yourself with the environment",
+          "icon": "🏨",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "clues_discovered": 1,
+              "loop_knowledge": 5
+            },
+            "narrative": "environmental_familiarity"
+          }
+        },
+        {
+          "id": "test_loop_theory",
+          "label": "Test if this is really repeating",
+          "description": "Deliberately break from expected behavior",
+          "icon": "🔄",
+          "visible": false,
+          "requirements": [
+            {
+              "type": "stat",
+              "condition": "loop_knowledge",
+              "value": 20,
+              "operator": ">="
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "loop_knowledge": 15,
+              "timeline_stability": -10
+            },
+            "narrative": "loop_confirmation"
+          }
+        }
+      ],
+      "objectives": [
+        {
+          "id": "attend_conference",
+          "description": "Go through the conference day",
+          "type": "required",
+          "visible": true,
+          "weight": 1
+        },
+        {
+          "id": "witness_death",
+          "description": "Be present for the tragic event",
+          "type": "hidden",
+          "visible": false,
+          "weight": 5
+        }
+      ],
+      "encounters": [
+        {
+          "id": "breakfast_alex",
+          "type": "conditional",
+          "trigger": {
+            "type": "choice",
+            "condition": "attended_breakfast"
+          },
+          "description": "You meet Alex Rivera at breakfast - a chance encounter that could be crucial",
+          "quickActions": [
+            {
+              "id": "casual_chat",
+              "label": "Make casual conversation",
+              "effects": {
+                "statChanges": {
+                  "alex_rivera": 10
+                }
+              }
+            },
+            {
+              "id": "probe_research",
+              "label": "Ask about their research",
+              "effects": {
+                "statChanges": {
+                  "clues_discovered": 1,
+                  "alex_rivera": 5
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "exitConditions": [
+        {
+          "requirements": [
+            {
+              "type": "objective",
+              "condition": "witness_death"
+            }
+          ],
+          "nextBeat": "loop_realization",
+          "narrative": "As Dr. Chen collapses at exactly 11:47 PM, the world seems to fracture around you. Then... darkness.",
+          "automatic": true
+        }
+      ]
+    },
+    {
+      "id": "loop_realization", 
+      "act": 1,
+      "title": "Déjà Vu All Over Again",
+      "description": "The same Tuesday morning, but with growing awareness of the impossible.",
+      "setting": {
+        "location": "hotel_room_237",
+        "timeOfDay": "6:00 AM",
+        "atmosphere": "unsettling familiarity"
+      },
+      "entryRequirements": [
+        {
+          "type": "stat",
+          "condition": "currentLoop",
+          "value": 2,
+          "operator": ">="
+        }
+      ],
+      "narrativeGuidance": {
+        "openingText": "The alarm sounds exactly the same. The rain hits the window in an identical pattern. Your phone shows Tuesday, October 15th, 2024. But you remember yesterday—remember watching Dr. Chen die. This isn't possible.",
+        "dynamicElements": {
+          "low_sanity": "The repetition feels like cosmic mockery. You're trapped in a nightmare of mundane routine.",
+          "high_loop_knowledge": "You move through the familiar motions with practiced efficiency, every detail mapped in your memory."
+        }
+      },
+      "quickActions": [
+        {
+          "id": "test_memories",
+          "label": "Test if people repeat exact actions",
+          "description": "See if everyone follows the same script",
+          "icon": "🧠",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "loop_knowledge": 15,
+              "sanity": -5
+            },
+            "narrative": "memory_confirmation"
+          }
+        },
+        {
+          "id": "warn_sarah",
+          "label": "Rush to warn Dr. Chen",
+          "description": "Try to prevent the death directly",
+          "icon": "⚠️",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "sarah_chen": 10,
+              "timeline_stability": -10,
+              "sanity": -10
+            },
+            "narrative": "failed_prevention"
+          }
+        },
+        {
+          "id": "systematic_investigation",
+          "label": "Plan a methodical investigation",
+          "description": "Use your loop knowledge strategically",
+          "icon": "📋",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "loop_knowledge": 10,
+              "clues_discovered": 2
+            },
+            "narrative": "methodical_approach"
+          }
+        },
+        {
+          "id": "breakdown",
+          "label": "Break down from the impossibility",
+          "description": "Give in to the psychological pressure",
+          "icon": "😰",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "sanity": -20,
+              "timeline_stability": -5,
+              "temporal_exhaustion": 15
+            },
+            "narrative": "psychological_crisis"
+          }
+        }
+      ],
+      "skillChecks": [
+        {
+          "trigger": "test_memories",
+          "stat": "sanity",
+          "difficulty": 15,
+          "successText": "You maintain your composure as you observe the exact repetition of events, taking careful mental notes.",
+          "failureText": "The perfect repetition is too much to process. Your mind rebels against the impossible reality.",
+          "criticalSuccess": {
+            "threshold": 20,
+            "text": "Your scientific training kicks in. You begin to see patterns and opportunities in the loop structure.",
+            "effects": {
+              "statChanges": {
+                "loop_knowledge": 25,
+                "perfect_memory": 10
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "investigation_phase",
+      "act": 2,
+      "title": "Patterns in Time",
+      "description": "Multiple loops spent gathering clues and understanding the mystery.",
+      "setting": {
+        "location": "various_conference_locations",
+        "timeOfDay": "throughout_the_day",
+        "atmosphere": "detective work with supernatural undertones"
+      },
+      "entryRequirements": [
+        {
+          "type": "stat",
+          "condition": "loop_knowledge",
+          "value": 25,
+          "operator": ">="
+        }
+      ],
+      "narrativeGuidance": {
+        "openingText": "You've relived this Tuesday seventeen times now. Each loop, you learn more about the people here, their motivations, their secrets. Dr. Sarah Chen will die at 11:47 PM unless you can piece together who wants her dead and why.",
+        "dynamicElements": {
+          "high_clues": "The pieces of the puzzle are coming together. You can feel the solution within reach.",
+          "high_temporal_exhaustion": "The weight of repetition is crushing. Every familiar conversation feels like torture.",
+          "high_perfect_memory": "You know every word, every gesture, every moment of this day with crystalline clarity."
+        }
+      },
+      "quickActions": [
+        {
+          "id": "shadow_suspects",
+          "label": "Follow suspicious people through the day",
+          "description": "Use loop knowledge to track potential killers",
+          "icon": "🕵️",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "clues_discovered": 3,
+              "loop_knowledge": 10
+            },
+            "narrative": "surveillance_discoveries"
+          }
+        },
+        {
+          "id": "search_rooms",
+          "label": "Search hotel rooms during sessions",
+          "description": "Investigate private spaces while owners are busy",
+          "icon": "🔍",
+          "visible": true,
+          "requirements": [
+            {
+              "type": "stat",
+              "condition": "loop_knowledge",
+              "value": 40,
+              "operator": ">="
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "clues_discovered": 5,
+              "timeline_stability": -15
+            },
+            "narrative": "evidence_gathering"
+          }
+        },
+        {
+          "id": "manipulate_conversations",
+          "label": "Use loop knowledge to extract confessions",
+          "description": "Leverage your perfect memory for interrogation",
+          "icon": "💬",
+          "visible": true,
+          "requirements": [
+            {
+              "type": "stat",
+              "condition": "perfect_memory",
+              "value": 30,
+              "operator": ">="
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "clues_discovered": 4,
+              "loop_knowledge": 15,
+              "sanity": -10
+            },
+            "narrative": "psychological_manipulation"
+          }
+        },
+        {
+          "id": "technical_investigation",
+          "label": "Investigate the conference technology",
+          "description": "Look for technical connections to the loop",
+          "icon": "💻",
+          "visible": false,
+          "requirements": [
+            {
+              "type": "stat",
+              "condition": "clues_discovered",
+              "value": 12,
+              "operator": ">="
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "loop_knowledge": 20,
+              "clues_discovered": 3
+            },
+            "unlocksPath": "quantum_connection"
+          }
+        }
+      ],
+      "encounters": [
+        {
+          "id": "alex_confrontation",
+          "type": "conditional",
+          "trigger": {
+            "type": "stat",
+            "condition": "alex_suspicion_level",
+            "value": 60,
+            "operator": ">="
+          },
+          "description": "Alex confronts you about your strange behavior and impossible knowledge",
+          "quickActions": [
+            {
+              "id": "reveal_truth",
+              "label": "Tell Alex about the time loop",
+              "effects": {
+                "statChanges": {
+                  "timeline_stability": -20,
+                  "alex_rivera": -30
+                }
+              }
+            },
+            {
+              "id": "deflect_suspicion",
+              "label": "Make excuses for your behavior",
+              "effects": {
+                "statChanges": {
+                  "alex_rivera": -10
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "hiddenTriggers": [
+        {
+          "condition": {
+            "type": "stat",
+            "condition": "clues_discovered",
+            "value": 15,
+            "operator": ">="
+          },
+          "effect": "killer_identity_revelation",
+          "description": "Evidence points to the real killer",
+          "narrative": "The pieces suddenly click into place. You know who's going to kill Dr. Chen and why."
+        },
+        {
+          "condition": {
+            "type": "stat",
+            "condition": "temporal_exhaustion",
+            "value": 80,
+            "operator": ">="
+          },
+          "effect": "breakdown_risk",
+          "description": "Player is at risk of mental breakdown",
+          "narrative": "The endless repetition is breaking your mind. You're not sure how many more loops you can endure."
+        }
+      ]
+    },
+    {
+      "id": "final_loop",
+      "act": 3,
+      "title": "Breaking the Cycle",
+      "description": "Armed with perfect knowledge, you make your final attempt to save Dr. Chen and escape the loop.",
+      "setting": {
+        "location": "conference_closing_mixer",
+        "timeOfDay": "11:30 PM",
+        "atmosphere": "climactic tension as fate approaches"
+      },
+      "entryRequirements": [
+        {
+          "type": "stat",
+          "condition": "clues_discovered",
+          "value": 15,
+          "operator": ">="
+        }
+      ],
+      "narrativeGuidance": {
+        "openingText": "Loop forty-three. You know everyone's schedule by heart, every conversation, every moment leading to 11:47 PM. Tonight, you finally have enough pieces of the puzzle. The poison is in the third champagne glass from the left. The killer is about to make their move.",
+        "moodProgression": [
+          "Tense preparation as the moment approaches",
+          "Heart-pounding action as you intervene",
+          "Either triumph or the crushing return of dawn"
+        ]
+      },
+      "quickActions": [
+        {
+          "id": "dramatic_confrontation",
+          "label": "Publicly confront the killer with evidence",
+          "description": "Expose Dr. Webb in front of everyone",
+          "icon": "📢",
+          "visible": true,
+          "requirements": [
+            {
+              "type": "stat",
+              "condition": "clues_discovered",
+              "value": 18,
+              "operator": ">="
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "timeline_stability": -20
+            },
+            "narrative": "public_revelation"
+          }
+        },
+        {
+          "id": "swap_glasses",
+          "label": "Secretly swap the poisoned champagne",
+          "description": "Prevent the poisoning without confrontation",
+          "icon": "🥂",
+          "visible": true,
+          "requirements": [
+            {
+              "type": "stat",
+              "condition": "perfect_memory",
+              "value": 70,
+              "operator": ">="
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "timeline_stability": 10
+            },
+            "narrative": "quiet_prevention"
+          }
+        },
+        {
+          "id": "coordinate_authorities",
+          "label": "Arrange for security to catch killer in the act",
+          "description": "Set up the perfect capture",
+          "icon": "👮",
+          "visible": true,
+          "requirements": [
+            {
+              "type": "stat",
+              "condition": "clues_discovered",
+              "value": 20,
+              "operator": ">="
+            },
+            {
+              "type": "stat",
+              "condition": "alex_rivera",
+              "value": 50,
+              "operator": ">="
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "timeline_stability": 15
+            },
+            "narrative": "perfect_timing"
+          }
+        },
+        {
+          "id": "break_loop_directly",
+          "label": "Attempt to shatter the time loop itself",
+          "description": "Use quantum equipment to break the cycle",
+          "icon": "⚛️",
+          "visible": false,
+          "requirements": [
+            {
+              "type": "stat",
+              "condition": "loop_knowledge",
+              "value": 90,
+              "operator": ">="
+            },
+            {
+              "type": "flag",
+              "condition": "quantum_connection_discovered"
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "timeline_stability": -50
+            },
+            "narrative": "temporal_intervention"
+          }
+        }
+      ],
+      "skillChecks": [
+        {
+          "trigger": "dramatic_confrontation",
+          "stat": "perfect_memory",
+          "difficulty": 20,
+          "successText": "Your perfect recall of evidence overwhelms Dr. Webb's defenses. The truth comes spilling out.",
+          "failureText": "Despite your knowledge, you can't quite make the accusations stick. Webb deflects and the moment passes.",
+          "criticalSuccess": {
+            "threshold": 25,
+            "text": "Your presentation is flawless, devastating, and complete. Dr. Webb breaks down and confesses everything.",
+            "effects": {
+              "triggersEvent": "complete_confession"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "characters": [
+    {
+      "id": "sarah_chen",
+      "name": "Dr. Sarah Chen",
+      "description": "Brilliant quantum computing researcher with a breakthrough discovery that someone wants to suppress",
+      "personality": ["brilliant", "trusting", "dedicated", "naive_about_office_politics"],
+      "role": "victim",
+      "stats": {
+        "intelligence": 20,
+        "charisma": 14,
+        "awareness": 8
+      },
+      "knowledge": ["quantum_breakthrough", "research_implications", "academic_politics"],
+      "secrets": ["revolutionary_discovery", "patent_applications", "industry_disruption"],
+      "schedule": {
+        "9_00_AM": "Breakfast in hotel restaurant",
+        "11_30_AM": "Keynote presentation on quantum computing",
+        "1_00_PM": "Lunch with conference organizers",
+        "3_00_PM": "Panel discussion on ethics in AI",
+        "6_00_PM": "Private meeting with potential investors",
+        "11_30_PM": "Closing mixer - target time 11:47 PM"
+      },
+      "dialogueTrees": {
+        "initial_meeting": {
+          "text": "I'm so excited about today's presentation. This research could change everything about how we approach quantum computing.",
+          "reveals": ["research_importance"],
+          "playerOptions": [
+            {
+              "text": "Tell me more about your research",
+              "effects": {
+                "statChanges": {
+                  "clues_discovered": 1
+                }
+              },
+              "leadsTo": "research_details"
+            }
+          ]
+        },
+        "research_details": {
+          "text": "I've found a way to maintain quantum coherence at room temperature. The applications are limitless, but some people seem... concerned about the implications.",
+          "reveals": ["quantum_breakthrough", "industry_threat"]
+        }
+      }
+    },
+    {
+      "id": "marcus_webb",
+      "name": "Dr. Marcus Webb",
+      "description": "Respected researcher hiding academic fraud, desperate to stop Sarah's work from exposing him",
+      "personality": ["desperate", "deceptive", "charming", "increasingly_paranoid"],
+      "role": "suspect",
+      "stats": {
+        "deception": 18,
+        "intelligence": 16,
+        "desperation": 19
+      },
+      "knowledge": ["academic_fraud", "research_falsification", "sarah_threat"],
+      "secrets": ["falsified_data", "career_destruction", "poison_access"],
+      "schedule": {
+        "8_00_AM": "Nervous breakfast, multiple phone calls",
+        "10_00_AM": "Panel on research integrity (ironic)",
+        "2_00_PM": "Private meeting with pharmaceutical contacts",
+        "5_00_PM": "Alone in hotel room - preparing poison",
+        "11_40_PM": "Approaches champagne table at mixer"
+      },
+      "dialogueTrees": {
+        "suspicious_behavior": {
+          "conditions": [
+            {
+              "type": "stat",
+              "condition": "loop_knowledge",
+              "value": 30,
+              "operator": ">="
+            }
+          ],
+          "text": "You keep asking strange questions. How could you possibly know about my... my research methodologies?",
+          "reveals": ["defensive_behavior", "guilt_indicators"]
+        }
+      }
+    },
+    {
+      "id": "alex_rivera",
+      "name": "Alex Rivera",
+      "description": "Competitive researcher working on similar problems, initially suspicious but ultimately innocent",
+      "personality": ["ambitious", "jealous", "ultimately_honorable", "insecure"],
+      "role": "ally",
+      "stats": {
+        "intelligence": 17,
+        "competitiveness": 16,
+        "integrity": 18
+      },
+      "companionAbilities": [
+        {
+          "id": "research_insight",
+          "name": "Academic Knowledge",
+          "description": "Can help decode technical clues and understand academic motivations",
+          "type": "passive"
+        },
+        {
+          "id": "conference_connections",
+          "name": "Networking",
+          "description": "Has connections throughout the conference that can provide alibis",
+          "type": "active",
+          "cooldown": "per_beat"
+        }
+      ],
+      "schedule": {
+        "7_30_AM": "Early breakfast - networking opportunity",
+        "9_00_AM": "Presentation on competing quantum research",
+        "12_00_PM": "Lunch with venture capitalists",
+        "4_00_PM": "Private lab tour with Dr. Chen",
+        "11_45_PM": "At bar during the crucial time - solid alibi"
+      }
+    },
+    {
+      "id": "diana_kessler",
+      "name": "Diana Kessler",
+      "description": "Corporate spy masquerading as tech journalist, wants Sarah's research but not her death",
+      "personality": ["deceptive", "professional", "conflicted", "pragmatic"],
+      "role": "suspect",
+      "stats": {
+        "deception": 19,
+        "investigation": 17,
+        "corporate_training": 18
+      },
+      "secrets": ["corporate_spy", "techflow_agent", "industrial_espionage"],
+      "schedule": {
+        "8_30_AM": "Interviews with various researchers",
+        "11_00_AM": "Recording Sarah's keynote",
+        "3_30_PM": "Attempts to access Sarah's laptop",
+        "7_00_PM": "Encrypted phone calls to corporate handlers",
+        "11_30_PM": "Photographing documents during mixer"
+      }
+    }
+  ],
+  "items": [
+    {
+      "id": "loop_journal",
+      "name": "Time Loop Documentation",
+      "description": "Your detailed notes that somehow persist between loops",
+      "type": "quest_item",
+      "properties": ["readable", "persistent"],
+      "effects": {
+        "statModifiers": {
+          "loop_knowledge": 10,
+          "perfect_memory": 5
+        }
+      },
+      "acquisitionMethod": "starts_with_player_after_loop_2"
+    },
+    {
+      "id": "quantum_research_data",
+      "name": "Sarah's Breakthrough Research",
+      "description": "Revolutionary quantum computing data that threatens entire industries",
+      "type": "clue",
+      "properties": ["evidence", "valuable"],
+      "effects": {
+        "revealsInformation": ["research_importance", "industry_threat", "motive_establishment"],
+        "statModifiers": {
+          "clues_discovered": 3
+        }
+      }
+    },
+    {
+      "id": "poison_vial",
+      "name": "Polonium-210 Capsule",
+      "description": "Sophisticated radioactive poison disguised as a vitamin supplement",
+      "type": "evidence",
+      "properties": ["evidence", "dangerous"],
+      "effects": {
+        "revealsInformation": ["murder_method", "killer_access", "premeditation"]
+      },
+      "acquisitionMethod": "found_in_webb_room_after_loop_15"
+    },
+    {
+      "id": "falsified_papers",
+      "name": "Webb's Fraudulent Research",
+      "description": "Academic papers with fabricated data that Sarah's work would expose",
+      "type": "evidence",
+      "properties": ["evidence", "readable"],
+      "effects": {
+        "revealsInformation": ["webb_motive", "academic_fraud", "career_desperation"],
+        "statModifiers": {
+          "clues_discovered": 4
+        }
+      }
+    },
+    {
+      "id": "security_footage",
+      "name": "Conference Security Recordings",
+      "description": "Digital evidence showing movements during critical timeframes",
+      "type": "evidence",
+      "properties": ["evidence", "technological"],
+      "effects": {
+        "revealsInformation": ["alibis", "timeline_verification", "suspect_movements"]
+      },
+      "acquisitionMethod": "requires_security_access_and_loop_knowledge_40"
+    },
+    {
+      "id": "quantum_device",
+      "name": "Prototype Quantum Stabilizer",
+      "description": "Sarah's experimental device that might be connected to the time loop",
+      "type": "quest_item",
+      "properties": ["technological", "mysterious"],
+      "effects": {
+        "unlocksPath": "loop_breaking_attempt",
+        "revealsInformation": ["temporal_connection"]
+      },
+      "requirements": [
+        {
+          "type": "stat",
+          "condition": "clues_discovered",
+          "value": 18,
+          "operator": ">="
+        }
+      ]
+    }
+  ],
+  "endings": [
+    {
+      "id": "perfect_resolution",
+      "title": "Clockwork Justice",
+      "description": "You orchestrate the perfect solution with authorities capturing the killer and Sarah surviving",
+      "category": "true",
+      "requirements": [
+        {
+          "type": "choice",
+          "condition": "coordinate_authorities"
+        },
+        {
+          "type": "stat",
+          "condition": "clues_discovered",
+          "value": 20,
+          "operator": ">="
+        },
+        {
+          "type": "stat",
+          "condition": "alex_rivera",
+          "value": 60,
+          "operator": ">="
+        },
+        {
+          "type": "stat",
+          "condition": "timeline_stability",
+          "value": 70,
+          "operator": ">="
+        }
+      ],
+      "narrative": "Like a conductor orchestrating a perfect symphony, you coordinate every element. Police arrive exactly when Webb makes his move, catching him with the poison. Sarah lives, justice is served, and Wednesday morning finally arrives. The loop is broken not through force, but through perfect execution.",
+      "consequences": {
+        "worldState": "Justice served, breakthrough research proceeds",
+        "characterFates": {
+          "sarah_chen": "Lives to revolutionize quantum computing",
+          "marcus_webb": "Arrested, academic fraud exposed",
+          "alex_rivera": "Becomes close colleague and friend"
+        },
+        "playerLegacy": "Master of time and justice"
+      },
+      "rewards": {
+        "achievements": ["perfect_detective", "time_master", "life_saver"],
+        "unlocks": ["sequel_access", "god_mode_replay"]
+      }
+    },
+    {
+      "id": "quiet_hero",
+      "title": "The Silent Guardian",
+      "description": "You save Sarah without anyone knowing the true danger she was in",
+      "category": "good",
+      "requirements": [
+        {
+          "type": "choice",
+          "condition": "swap_glasses"
+        },
+        {
+          "type": "stat",
+          "condition": "perfect_memory",
+          "value": 70,
+          "operator": ">="
+        }
+      ],
+      "narrative": "Sarah drinks the harmless champagne, never knowing how close death came. Webb's plot fails, but he remains free to try again. You're the guardian angel no one sees, protecting the future of science from the shadows. Wednesday arrives, but you wonder if justice truly served requires more than just prevention.",
+      "consequences": {
+        "worldState": "Sarah safe but Webb remains free",
+        "playerLegacy": "Unknown protector of scientific progress"
+      }
+    },
+    {
+      "id": "temporal_freedom",
+      "title": "Breaking the Chains of Time",
+      "description": "You destroy the quantum loop at great personal cost",
+      "category": "bittersweet",
+      "requirements": [
+        {
+          "type": "choice",
+          "condition": "break_loop_directly"
+        },
+        {
+          "type": "stat",
+          "condition": "loop_knowledge",
+          "value": 90,
+          "operator": ">="
+        }
+      ],
+      "narrative": "Understanding the quantum entanglement behind the loop, you use Sarah's prototype to shatter the temporal prison. Reality tears and bleeds, time flows chaotically, but finally stabilizes. You emerge in a Wednesday that feels alien—free but forever changed by your journey through infinite Tuesdays.",
+      "consequences": {
+        "worldState": "Timeline damaged but flowing forward",
+        "playerLegacy": "Temporal exile who broke reality itself"
+      }
+    },
+    {
+      "id": "eternal_guardian",
+      "title": "Forever Tuesday",
+      "description": "You accept the loop as your eternal responsibility",
+      "category": "tragic",
+      "requirements": [
+        {
+          "type": "stat",
+          "condition": "temporal_exhaustion",
+          "value": 90,
+          "operator": ">="
+        },
+        {
+          "type": "stat",
+          "condition": "sanity",
+          "value": 30,
+          "operator": "<="
+        }
+      ],
+      "narrative": "You stop trying to escape. This Tuesday is your domain now, and you'll live it forever, ensuring Sarah Chen never dies. You become the eternal guardian of this single day, protecting one life at the cost of your own linear existence. Some kinds of immortality are prisons disguised as purpose.",
+      "consequences": {
+        "worldState": "Single day preserved in amber",
+        "playerLegacy": "Eternal prisoner of their own compassion"
+      }
+    },
+    {
+      "id": "cascade_failure",
+      "title": "Temporal Cascade",
+      "description": "Your interventions cause reality to collapse",
+      "category": "bad",
+      "requirements": [
+        {
+          "type": "stat",
+          "condition": "timeline_stability",
+          "value": 20,
+          "operator": "<="
+        }
+      ],
+      "narrative": "Too many changes, too much interference. The timeline fractures beyond repair. You experience every possible Tuesday simultaneously—Sarah lives, dies, never existed, becomes the killer herself. Reality becomes a broken kaleidoscope of infinite possibilities, and you're lost forever in the chaos you created.",
+      "consequences": {
+        "worldState": "Reality fractured beyond repair",
+        "playerLegacy": "Cautionary tale of temporal hubris"
+      }
+    }
+  ],
+  "aiGuidance": {
+    "toneProgression": {
+      "act1": "Growing unease as repetition becomes apparent, mixing mundane conference atmosphere with creeping dread",
+      "act2": "Methodical investigation tension with mounting psychological pressure from endless repetition",
+      "act3": "Climactic urgency as the perfect moment approaches, balancing hope and desperation"
+    },
+    "narrativeStyle": {
+      "perspective": "second-person",
+      "tense": "present",
+      "descriptiveLevel": "detailed"
+    },
+    "playerAgency": "Emphasize how loop knowledge creates new possibilities. Every repeated conversation can be approached differently. Reward creative use of accumulated information.",
+    "mechanicsHandling": "Track character knowledge and relationships without showing numbers. Describe growing expertise: 'you know exactly what Alex will say next' rather than showing loop counts.",
+    "responseToPlayerMood": {
+      "methodical": "Reward systematic investigation with clear progress markers",
+      "impatient": "Allow shortcuts but with consequences to timeline stability",
+      "emotional": "Show how repetition affects relationships and mental state",
+      "experimental": "Encourage reality testing but track cumulative timeline damage"
+    },
+    "encouragedElements": [
+      "Temporal mechanics that feel logical within fantasy framework",
+      "Character development through repeated interactions",
+      "Gradual revelation through investigation across multiple loops",
+      "Psychological pressure of repetition and knowledge burden",
+      "Multiple valid approaches to solving the central mystery"
+    ],
+    "forbiddenTopics": [
+      "Explicit time travel paradox explanations",
+      "Breaking the fourth wall about being in a game",
+      "Real-world physics that would undermine the fantasy"
+    ]
+  },
+  "functionCalls": [
+    {
+      "name": "updatePlayerStats",
+      "description": "Update time loop specific stats and progress",
+      "parameters": {
+        "loop_knowledge": "number (0 to 100) - understanding of loop mechanics",
+        "timeline_stability": "number (0 to 100) - how much reality can withstand changes",
+        "sanity": "number (0 to 100) - mental stability under repetition",
+        "clues_discovered": "number (0 to 25) - mystery investigation progress",
+        "perfect_memory": "number (0 to 100) - ability to recall exact details",
+        "temporal_exhaustion": "number (0 to 100) - fatigue from repetition"
+      },
+      "examples": [
+        {
+          "situation": "Player notices exact repetition of events",
+          "call": {
+            "loop_knowledge": 10,
+            "sanity": -5
+          }
+        },
+        {
+          "situation": "Player makes major change to timeline",
+          "call": {
+            "timeline_stability": -15,
+            "temporal_exhaustion": 5
+          }
+        }
+      ]
+    },
+    {
+      "name": "triggerLoop",
+      "description": "Reset timeline to 6:00 AM Tuesday with retained knowledge",
+      "parameters": {
+        "loopNumber": "number - which loop this becomes",
+        "retainedKnowledge": "array - what the player remembers",
+        "trigger": "string - what caused the reset"
+      }
+    },
+    {
+      "name": "updateRelationship",
+      "description": "Modify character relationship across loops",
+      "parameters": {
+        "characterId": "string - which character",
+        "change": "number - relationship modifier",
+        "persistent": "boolean - survives loop reset"
+      }
+    },
+    {
+      "name": "checkTimelineStability",
+      "description": "Evaluate if reality can handle more changes",
+      "parameters": {
+        "proposedAction": "string - what player wants to do",
+        "currentStability": "number - timeline stability level"
+      }
+    },
+    {
+      "name": "revealClue",
+      "description": "Add discovered information to player knowledge",
+      "parameters": {
+        "clueId": "string - identifier for the clue",
+        "significance": "number - how important this clue is",
+        "source": "string - how the clue was discovered"
+      }
+    }
+  ],
+  "gameSettings": {
+    "saveSystem": {
+      "autosaveEnabled": true,
+      "checkpointBeats": ["first_loop", "loop_realization", "investigation_phase", "final_loop"]
+    },
+    "timeManagement": {
+      "realTimeEvents": false,
+      "timePressure": true
+    }
+  }
+}

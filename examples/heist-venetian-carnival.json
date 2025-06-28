@@ -1,0 +1,536 @@
+{
+  "metadata": {
+    "id": "venetian-carnival-heist",
+    "title": "The Venetian Score",
+    "description": "Plan and execute the perfect heist during Venice Carnival in this Ocean's Eleven style crime thriller.",
+    "author": "Bytebound Chronicles Team",
+    "version": "1.0.0",
+    "gameStyle": "heist-crime",
+    "difficulty": "hard",
+    "estimatedLength": 180,
+    "tags": ["crime", "heist", "strategy", "thriller", "planning"],
+    "contentWarnings": ["criminal activity", "mild violence", "moral ambiguity"],
+    "playerInputMode": {
+      "primary": "hybrid",
+      "quickActionsEnabled": true,
+      "customActionAlwaysAvailable": true
+    }
+  },
+  "hiddenMechanics": {
+    "playerStats": {
+      "heat": 0,
+      "planning": 0,
+      "resources": 50000,
+      "crew_loyalty": 50,
+      "intel": 0,
+      "reputation": 30,
+      "police_attention": 0
+    },
+    "thresholds": {
+      "highHeat": 70,
+      "excellentPlanning": 80,
+      "lowResources": 10000,
+      "crewMutiny": 20,
+      "masterThief": 90,
+      "policeInvestigation": 60
+    },
+    "gameSpecificMechanics": {
+      "heistPlan": {
+        "approach": "unselected",
+        "crewSize": 1,
+        "targetKnowledge": 0,
+        "securityLevel": 85,
+        "timeWindow": 4
+      },
+      "crewMembers": {},
+      "targetIntel": {
+        "layout": 0,
+        "guards": 0,
+        "alarms": 0,
+        "vault": 0
+      }
+    },
+    "difficultyModifiers": {
+      "hard": {
+        "statMultipliers": {
+          "resources": 0.8,
+          "intel": 0.7
+        },
+        "skillCheckBonus": -3,
+        "resourceModifier": 0.7
+      }
+    }
+  },
+  "beats": [
+    {
+      "id": "job_offer",
+      "act": 1,
+      "title": "An Offer You Can't Refuse",
+      "description": "A mysterious client offers you the score of a lifetime during Venice Carnival.",
+      "setting": {
+        "location": "venice_back_alley",
+        "timeOfDay": "midnight",
+        "weather": "light_fog",
+        "atmosphere": "shadowy, clandestine"
+      },
+      "narrativeGuidance": {
+        "openingText": "Carnival masks hang in shop windows as you navigate Venice's labyrinthine alleys. Your contact waits in the shadows—Elena Rosetti, art dealer by day, information broker by night. The job she's proposing could set you up for life... or land you in prison forever.",
+        "dynamicElements": {
+          "high_reputation": "Elena treats you with respect, knowing your professional capabilities.",
+          "low_reputation": "Elena seems skeptical, questioning whether you can handle a job of this magnitude."
+        }
+      },
+      "quickActions": [
+        {
+          "id": "accept_immediately",
+          "label": "Accept the job without hesitation",
+          "description": "Show confidence in your abilities",
+          "icon": "✅",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "reputation": 10,
+              "crew_loyalty": 10,
+              "heat": 5
+            },
+            "narrative": "confident_acceptance"
+          }
+        },
+        {
+          "id": "negotiate_terms",
+          "label": "Negotiate for better terms",
+          "description": "Try to improve the deal",
+          "icon": "💰",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "resources": 10000,
+              "planning": 10
+            },
+            "narrative": "savvy_negotiation"
+          }
+        },
+        {
+          "id": "demand_more_info",
+          "label": "Demand detailed intelligence",
+          "description": "Insist on knowing more about the target",
+          "icon": "🔍",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "intel": 15,
+              "planning": 5
+            },
+            "narrative": "cautious_approach"
+          }
+        }
+      ],
+      "objectives": [
+        {
+          "id": "accept_job",
+          "description": "Decide whether to take the job",
+          "type": "required",
+          "visible": true,
+          "weight": 3
+        }
+      ]
+    },
+    {
+      "id": "crew_assembly",
+      "act": 1,
+      "title": "Building the Perfect Team",
+      "description": "Recruit specialists for the heist - each with unique skills and complications.",
+      "setting": {
+        "location": "safe_house_canal",
+        "timeOfDay": "evening",
+        "atmosphere": "tense planning session"
+      },
+      "entryRequirements": [
+        {
+          "type": "objective",
+          "condition": "accept_job",
+          "value": true
+        }
+      ],
+      "narrativeGuidance": {
+        "openingText": "Your safe house overlooks the Grand Canal. Maps, blueprints, and photographs cover every surface. The Casino Palazzo won't rob itself—you need the right people for this job. Specialists who can handle the unique challenges of Venice's most secure establishment.",
+        "dynamicElements": {
+          "high_resources": "You can afford the best specialists in the business.",
+          "low_resources": "You'll need to be selective about who you can afford to recruit."
+        }
+      },
+      "quickActions": [
+        {
+          "id": "recruit_silk",
+          "label": "Recruit Sofia 'Silk' Martinez",
+          "description": "Master cat burglar - stealth infiltration specialist",
+          "icon": "🐱",
+          "visible": true,
+          "requirements": [
+            {
+              "type": "stat",
+              "condition": "resources",
+              "value": 15000,
+              "operator": ">="
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "crew_loyalty": 15,
+              "planning": 20,
+              "resources": -15000
+            },
+            "narrative": "silk_recruited"
+          }
+        },
+        {
+          "id": "recruit_ghost",
+          "label": "Bring in Viktor 'The Ghost' Petrov",
+          "description": "Electronics specialist - hacking and surveillance",
+          "icon": "💻",
+          "visible": true,
+          "requirements": [
+            {
+              "type": "stat",
+              "condition": "resources",
+              "value": 20000,
+              "operator": ">="
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "intel": 20,
+              "planning": 15,
+              "resources": -20000
+            },
+            "narrative": "ghost_recruited"
+          }
+        },
+        {
+          "id": "recruit_fingers",
+          "label": "Get Lucia 'Fingers' Benedetti",
+          "description": "Con artist and social engineer",
+          "icon": "🎭",
+          "visible": true,
+          "requirements": [
+            {
+              "type": "stat",
+              "condition": "resources",
+              "value": 12000,
+              "operator": ">="
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "planning": 15,
+              "crew_loyalty": 10,
+              "resources": -12000
+            },
+            "narrative": "fingers_recruited"
+          }
+        }
+      ],
+      "objectives": [
+        {
+          "id": "assemble_crew",
+          "description": "Recruit at least one specialist",
+          "type": "required",
+          "visible": true,
+          "weight": 2
+        },
+        {
+          "id": "plan_approach",
+          "description": "Develop heist strategy",
+          "type": "optional",
+          "visible": true,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "heist_execution",
+      "act": 3,
+      "title": "Carnival Night",
+      "description": "Execute the heist during the chaos of Venice Carnival.",
+      "setting": {
+        "location": "casino_palazzo_carnival",
+        "timeOfDay": "midnight",
+        "atmosphere": "masked revelry hiding criminal intent"
+      },
+      "entryRequirements": [
+        {
+          "type": "objective",
+          "condition": "assemble_crew"
+        },
+        {
+          "type": "stat",
+          "condition": "planning",
+          "value": 30,
+          "operator": ">="
+        }
+      ],
+      "narrativeGuidance": {
+        "openingText": "Carnival night has arrived. The city pulses with music and masked dancers while fireworks light the sky. Inside the Casino Palazzo, you and your crew move through the crowd—just another group of costumed revelers. But beneath the masks lie the faces of thieves about to pull off the score of a lifetime.",
+        "moodProgression": [
+          "Tense anticipation as the plan begins",
+          "Adrenaline-fueled action during execution",
+          "Either triumph or desperate escape"
+        ]
+      },
+      "quickActions": [
+        {
+          "id": "stealth_route",
+          "label": "Execute stealth infiltration plan",
+          "description": "Use Silk's skills for silent entry",
+          "icon": "🤫",
+          "visible": true,
+          "requirements": [
+            {
+              "type": "flag",
+              "condition": "silk_recruited"
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "heat": 10
+            },
+            "narrative": "stealth_success"
+          }
+        },
+        {
+          "id": "tech_route",
+          "label": "Execute technical infiltration",
+          "description": "Viktor disables security systems",
+          "icon": "⚡",
+          "visible": true,
+          "requirements": [
+            {
+              "type": "flag",
+              "condition": "ghost_recruited"
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "heat": 15
+            },
+            "narrative": "tech_success"
+          }
+        },
+        {
+          "id": "social_route",
+          "label": "Execute social engineering plan",
+          "description": "Lucia creates distractions and diversions",
+          "icon": "🎪",
+          "visible": true,
+          "requirements": [
+            {
+              "type": "flag",
+              "condition": "fingers_recruited"
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "heat": 20
+            },
+            "narrative": "social_success"
+          }
+        }
+      ],
+      "encounters": [
+        {
+          "id": "security_complication",
+          "type": "random",
+          "chance": 0.4,
+          "description": "Unexpected security patrol threatens to discover your operation",
+          "quickActions": [
+            {
+              "id": "abort_mission",
+              "label": "Abort and escape",
+              "effects": {
+                "narrative": "mission_abort"
+              }
+            },
+            {
+              "id": "adapt_plan",
+              "label": "Adapt on the fly",
+              "requirements": [
+                {
+                  "type": "stat",
+                  "condition": "planning",
+                  "value": 60,
+                  "operator": ">="
+                }
+              ],
+              "effects": {
+                "statChanges": {
+                  "heat": 25
+                },
+                "narrative": "adaptation_success"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "characters": [
+    {
+      "id": "elena_rosetti",
+      "name": "Elena Rosetti",
+      "description": "Sophisticated art dealer with connections to both legitimate and criminal worlds",
+      "personality": ["intelligent", "manipulative", "ambitious", "mysterious"],
+      "role": "informant",
+      "secrets": ["double_agent", "rival_family_connections"]
+    },
+    {
+      "id": "sofia_silk",
+      "name": "Sofia 'Silk' Martinez",
+      "description": "Master cat burglar known for impossible infiltrations",
+      "personality": ["professional", "perfectionist", "calm", "reliable"],
+      "role": "ally",
+      "companionAbilities": [
+        {
+          "id": "stealth_master",
+          "name": "Silent Movement",
+          "description": "Can bypass security undetected",
+          "type": "active"
+        }
+      ]
+    },
+    {
+      "id": "viktor_ghost",
+      "name": "Viktor 'The Ghost' Petrov",
+      "description": "Electronics specialist who can make any security system transparent",
+      "personality": ["methodical", "paranoid", "brilliant", "socially_awkward"],
+      "role": "ally",
+      "companionAbilities": [
+        {
+          "id": "system_hack",
+          "name": "Electronic Infiltration",
+          "description": "Can disable alarms and cameras",
+          "type": "active"
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "casino_blueprints",
+      "name": "Original Casino Blueprints",
+      "description": "18th-century architectural plans showing hidden passages",
+      "type": "clue",
+      "properties": ["readable"],
+      "effects": {
+        "statModifiers": {
+          "intel": 20,
+          "planning": 15
+        }
+      }
+    },
+    {
+      "id": "medici_amulet",
+      "name": "The Medici Amulet",
+      "description": "Priceless Renaissance artifact worth 10 million euros",
+      "type": "quest_item",
+      "properties": ["valuable"],
+      "acquisitionMethod": "successful_heist_completion"
+    }
+  ],
+  "endings": [
+    {
+      "id": "perfect_heist",
+      "title": "The Perfect Score",
+      "description": "Flawless execution with minimal heat and maximum payout",
+      "category": "good",
+      "requirements": [
+        {
+          "type": "stat",
+          "condition": "heat",
+          "value": 30,
+          "operator": "<="
+        },
+        {
+          "type": "stat",
+          "condition": "crew_loyalty",
+          "value": 70,
+          "operator": ">="
+        },
+        {
+          "type": "objective",
+          "condition": "heist_success"
+        }
+      ],
+      "narrative": "You vanish into the Carnival crowds as fireworks explode overhead. The theft won't be discovered for days, and by then, you'll be ghosts in the wind. The crew splits the take in a safe house overlooking the Adriatic, already planning their next scores.",
+      "rewards": {
+        "achievements": ["perfect_thief", "crew_leader", "carnival_ghost"]
+      }
+    },
+    {
+      "id": "caught_ending",
+      "title": "The House Always Wins",
+      "description": "Sometimes even the best-laid plans go wrong",
+      "category": "bad",
+      "requirements": [
+        {
+          "type": "stat",
+          "condition": "heat",
+          "value": 80,
+          "operator": ">="
+        }
+      ],
+      "narrative": "The cell door clangs shut as you contemplate what went wrong. In the distance, you can still hear the sounds of Carnival—a freedom you won't see again for many years. Your crew scattered when the plan fell apart, leaving you to face the consequences alone."
+    }
+  ],
+  "aiGuidance": {
+    "toneProgression": {
+      "act1": "tension and anticipation during planning and recruitment",
+      "act2": "methodical preparation building to crescendo",
+      "act3": "high-stakes action with split-second decisions"
+    },
+    "narrativeStyle": {
+      "perspective": "second-person",
+      "tense": "present",
+      "descriptiveLevel": "cinematic"
+    },
+    "playerAgency": "Emphasize planning consequences. Every preparation choice affects execution options. Reward thorough planning but allow improvisation.",
+    "mechanicsHandling": "Present crew dynamics through dialogue and actions. Show heat through NPC reactions and environmental changes rather than numbers.",
+    "encouragedElements": [
+      "Ocean's Eleven style team dynamics",
+      "Venice Carnival atmosphere and setting",
+      "Tension between careful planning and adaptability",
+      "Moral ambiguity of likeable criminals"
+    ]
+  },
+  "functionCalls": [
+    {
+      "name": "updatePlayerStats",
+      "description": "Update heist-related stats and progress",
+      "parameters": {
+        "heat": "number (0 to 100) - police attention level",
+        "planning": "number (0 to 100) - preparation quality",
+        "resources": "number (0 to 1000000) - available funds",
+        "crew_loyalty": "number (0 to 100) - team cohesion",
+        "intel": "number (0 to 100) - target knowledge",
+        "reputation": "number (0 to 100) - criminal standing"
+      }
+    },
+    {
+      "name": "addCrewMember",
+      "description": "Add specialist to the heist crew",
+      "parameters": {
+        "crewId": "string - crew member identifier",
+        "cost": "number - recruitment cost",
+        "specialties": "array - crew member abilities"
+      }
+    },
+    {
+      "name": "calculateHeistSuccess",
+      "description": "Determine outcome based on planning and execution",
+      "parameters": {
+        "approach": "string - chosen heist method",
+        "crew": "array - participating crew members",
+        "planning": "number - preparation level"
+      }
+    }
+  ]
+}

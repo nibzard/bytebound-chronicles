@@ -1,0 +1,110 @@
+{
+  "metadata": {
+    "id": "merchant-mystery",
+    "title": "The Missing Merchant",
+    "description": "A mysterious disappearance in a peaceful village leads to dark secrets.",
+    "author": "Game Dev Team",
+    "version": "1.0.0",
+    "difficulty": "beginner",
+    "estimatedLength": 120,
+    "tags": ["mystery", "fantasy", "investigation"],
+    "contentWarnings": ["mild violence", "supernatural themes"]
+  },
+  "beats": [
+    {
+      "id": "village_arrival",
+      "act": 1,
+      "title": "Arrival at Millhaven",
+      "description": "You arrive at the small village of Millhaven as storm clouds gather overhead.",
+      "setting": {
+        "location": "village_entrance",
+        "timeOfDay": "evening",
+        "atmosphere": "tense, foreboding"
+      },
+      "objectives": [
+        {
+          "id": "enter_village",
+          "description": "Enter the village",
+          "type": "required",
+          "completionHints": ["approach the village", "walk into town"],
+          "weight": 1
+        },
+        {
+          "id": "talk_to_villager",
+          "description": "Learn about the situation",
+          "type": "required",
+          "completionHints": ["speak with someone", "ask questions"],
+          "weight": 2
+        }
+      ],
+      "exitTransitions": [
+        {
+          "targetBeatId": "tavern_investigation",
+          "requirements": [
+            { "type": "objective", "condition": "enter_village" },
+            { "type": "objective", "condition": "talk_to_villager" }
+          ],
+          "weight": 3,
+          "description": "Standard story progression"
+        },
+        {
+          "targetBeatId": "aggressive_approach",
+          "requirements": [
+            { "type": "choice", "condition": "intimidate_villager" }
+          ],
+          "weight": 1,
+          "description": "Aggressive investigation path"
+        }
+      ],
+      "aiGuidance": {
+        "tone": "mysterious, slightly ominous",
+        "style": "descriptive but not overwhelming",
+        "keyThemes": ["mystery", "small town secrets", "approaching danger"],
+        "avoidTopics": ["graphic violence", "explicit content"]
+      },
+      "endingImplications": {
+        "hero_ending": 0,
+        "detective_ending": 1,
+        "rogue_ending": 0
+      },
+      "characterArcs": {
+        "village_elder": "initial_suspicion",
+        "tavern_keeper": "cautious_friendliness"
+      }
+    }
+  ],
+  "characters": [
+    {
+      "id": "village_elder",
+      "name": "Elder Thomsen",
+      "description": "A weathered man with knowing eyes",
+      "personality": ["wise", "secretive", "protective"],
+      "knowledge": ["village_history", "merchant_routes", "old_legends"],
+      "relationships": {
+        "player": "neutral",
+        "tavern_keeper": "trusted_friend"
+      }
+    }
+  ],
+  "items": [
+    {
+      "id": "merchants_ledger",
+      "name": "Garrett's Ledger",
+      "description": "A leather-bound book with recent transactions",
+      "properties": ["readable", "evidence", "valuable"],
+      "revealsBeatIds": ["darkwood_clues"]
+    }
+  ],
+  "endings": [
+    {
+      "id": "hero_ending",
+      "title": "The Village Hero",
+      "description": "You save the village and become a local legend",
+      "requirements": [
+        { "type": "state", "condition": "village_reputation", "value": ">= 80" },
+        { "type": "objective", "condition": "save_merchant" }
+      ],
+      "unlockText": "Your heroic actions have saved Millhaven..."
+    }
+  ]
+}

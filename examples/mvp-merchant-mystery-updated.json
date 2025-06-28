@@ -1,0 +1,744 @@
+{
+  "metadata": {
+    "id": "merchant-mystery-mvp",
+    "title": "The Missing Merchant",
+    "description": "A mysterious disappearance in a peaceful village leads to dark secrets.",
+    "author": "Game Dev Team",
+    "version": "1.0.0",
+    "gameStyle": "rpg-fantasy",
+    "difficulty": "easy",
+    "estimatedLength": 120,
+    "tags": ["mystery", "fantasy", "investigation"],
+    "contentWarnings": ["mild violence", "supernatural themes"],
+    "playerInputMode": {
+      "primary": "hybrid",
+      "quickActionsEnabled": true,
+      "customActionAlwaysAvailable": true
+    }
+  },
+  "hiddenMechanics": {
+    "playerStats": {
+      "health": 100,
+      "village_reputation": 0,
+      "investigation_progress": 0,
+      "merchant_clues": 0,
+      "aggressive_actions": 0
+    },
+    "thresholds": {
+      "heroic_reputation": 80,
+      "villain_reputation": -50,
+      "investigation_breakthrough": 5,
+      "aggressive_approach": 3
+    },
+    "relationships": {
+      "village_elder": 0,
+      "tavern_keeper": 0,
+      "villagers_general": 0
+    },
+    "difficultyModifiers": {
+      "easy": {
+        "statMultipliers": {
+          "village_reputation": 1.5,
+          "investigation_progress": 1.3
+        },
+        "skillCheckBonus": 2,
+        "resourceModifier": 1.2
+      }
+    }
+  },
+  "beats": [
+    {
+      "id": "village_arrival",
+      "act": 1,
+      "title": "Arrival at Millhaven",
+      "description": "You arrive at the small village of Millhaven as storm clouds gather overhead.",
+      "setting": {
+        "location": "village_entrance",
+        "timeOfDay": "evening",
+        "atmosphere": "tense, foreboding"
+      },
+      "narrativeGuidance": {
+        "openingText": "You arrive at the small village of Millhaven as storm clouds gather overhead. The cobblestone streets glisten with recent rain, and the villagers hurry past with downcast eyes, avoiding your gaze. There's a tension in the air that has nothing to do with the approaching storm.",
+        "dynamicElements": {
+          "high_reputation": "Some villagers nod respectfully as you pass, having heard of your reputation.",
+          "low_reputation": "Villagers quickly duck into doorways, clearly wanting nothing to do with you.",
+          "aggressive_approach": "Your previous aggressive actions have made the villagers wary and fearful."
+        }
+      },
+      "quickActions": [
+        {
+          "id": "approach_village_calmly",
+          "label": "Enter the village peacefully",
+          "description": "Walk into town with a calm, non-threatening demeanor",
+          "icon": "🚶",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "village_reputation": 10,
+              "villagers_general": 5
+            },
+            "narrative": "peaceful_approach"
+          }
+        },
+        {
+          "id": "observe_surroundings",
+          "label": "Carefully observe your surroundings",
+          "description": "Take time to study the village and its inhabitants",
+          "icon": "👀",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "investigation_progress": 1,
+              "merchant_clues": 1
+            },
+            "narrative": "observant_investigator"
+          }
+        },
+        {
+          "id": "demand_attention",
+          "label": "Loudly demand someone speak with you",
+          "description": "Make your presence known with authority",
+          "icon": "📢",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "village_reputation": -15,
+              "aggressive_actions": 1,
+              "villagers_general": -10
+            },
+            "narrative": "aggressive_entrance"
+          }
+        },
+        {
+          "id": "seek_village_elder",
+          "label": "Look for the village elder",
+          "description": "Find whoever leads this community",
+          "icon": "🧙",
+          "visible": true,
+          "effects": {
+            "progressStory": true,
+            "narrative": "elder_meeting"
+          }
+        }
+      ],
+      "objectives": [
+        {
+          "id": "enter_village",
+          "description": "Enter the village",
+          "type": "required",
+          "visible": true,
+          "completionHints": ["approach the village", "walk into town"],
+          "weight": 1,
+          "rewards": {
+            "experience": 10
+          }
+        },
+        {
+          "id": "talk_to_villager",
+          "description": "Learn about the situation",
+          "type": "required",
+          "visible": true,
+          "completionHints": ["speak with someone", "ask questions"],
+          "weight": 2,
+          "rewards": {
+            "experience": 15,
+            "statBonus": {
+              "investigation_progress": 1
+            }
+          }
+        },
+        {
+          "id": "discover_merchant_fate",
+          "description": "Find out what happened to the merchant",
+          "type": "optional",
+          "visible": false,
+          "weight": 3,
+          "rewards": {
+            "experience": 25
+          }
+        }
+      ],
+      "hiddenTriggers": [
+        {
+          "condition": {
+            "type": "stat",
+            "condition": "aggressive_actions",
+            "value": 2,
+            "operator": ">="
+          },
+          "effect": "villagers_become_hostile",
+          "description": "Too many aggressive actions make villagers fearful",
+          "narrative": "The villagers begin to whisper among themselves, casting fearful glances in your direction."
+        },
+        {
+          "condition": {
+            "type": "stat",
+            "condition": "investigation_progress",
+            "value": 3,
+            "operator": ">="
+          },
+          "effect": "reveal_tavern_importance",
+          "description": "Careful observation reveals the tavern's significance",
+          "narrative": "Your keen observations point to the tavern as a crucial location in this mystery."
+        }
+      ],
+      "exitConditions": [
+        {
+          "requirements": [
+            {
+              "type": "objective",
+              "condition": "enter_village",
+              "value": true
+            },
+            {
+              "type": "objective", 
+              "condition": "talk_to_villager",
+              "value": true
+            }
+          ],
+          "nextBeat": "tavern_investigation",
+          "narrative": "With initial information gathered, you head toward the tavern where the merchant was last seen.",
+          "automatic": false
+        },
+        {
+          "requirements": [
+            {
+              "type": "stat",
+              "condition": "aggressive_actions",
+              "value": 3,
+              "operator": ">="
+            }
+          ],
+          "nextBeat": "aggressive_confrontation",
+          "narrative": "Your aggressive approach has escalated the situation beyond normal investigation.",
+          "automatic": true
+        }
+      ]
+    },
+    {
+      "id": "tavern_investigation",
+      "act": 1,
+      "title": "The Tarnished Tankard",
+      "description": "The village tavern where the merchant was last seen alive.",
+      "setting": {
+        "location": "tavern_interior",
+        "timeOfDay": "evening",
+        "atmosphere": "warm but tense"
+      },
+      "entryRequirements": [
+        {
+          "type": "objective",
+          "condition": "talk_to_villager",
+          "value": true
+        }
+      ],
+      "narrativeGuidance": {
+        "openingText": "The Tarnished Tankard's heavy wooden door creaks as you enter. The warmth hits you immediately, a welcome relief from the chill outside. A few locals nurse their drinks in shadowy corners, but conversation dies as you step inside. Behind the bar, a red-haired woman watches you with intelligent, measuring eyes.",
+        "dynamicElements": {
+          "high_village_reputation": "The tavern keeper greets you with a warm smile, having heard good things about you.",
+          "low_village_reputation": "The tavern keeper's expression is guarded, clearly having heard unsavory reports.",
+          "investigation_progress": "Your investigative instincts immediately start cataloging details about the room."
+        }
+      },
+      "quickActions": [
+        {
+          "id": "order_drink",
+          "label": "Order a drink and observe",
+          "description": "Blend in while gathering information",
+          "icon": "🍺",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "tavern_keeper": 10,
+              "investigation_progress": 1
+            },
+            "narrative": "casual_investigation"
+          }
+        },
+        {
+          "id": "ask_about_merchant",
+          "label": "Ask directly about the missing merchant",
+          "description": "Get straight to the point",
+          "icon": "❓",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "merchant_clues": 2,
+              "investigation_progress": 1
+            },
+            "progressStory": true
+          }
+        },
+        {
+          "id": "question_patrons",
+          "label": "Speak with the other patrons",
+          "description": "See what the locals know",
+          "icon": "👥",
+          "visible": true,
+          "requirements": [
+            {
+              "type": "stat",
+              "condition": "village_reputation",
+              "value": 0,
+              "operator": ">="
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "merchant_clues": 1,
+              "villagers_general": 5
+            }
+          }
+        },
+        {
+          "id": "search_merchants_table",
+          "label": "Examine where the merchant sat",
+          "description": "Look for clues at his usual spot",
+          "icon": "🔍",
+          "visible": false,
+          "requirements": [
+            {
+              "type": "flag",
+              "condition": "tavern_keeper_helpful"
+            }
+          ],
+          "effects": {
+            "addsItem": "merchants_ledger",
+            "statChanges": {
+              "merchant_clues": 3
+            }
+          }
+        }
+      ],
+      "objectives": [
+        {
+          "id": "learn_merchant_details",
+          "description": "Discover what happened to Garrett the merchant",
+          "type": "required",
+          "visible": true,
+          "weight": 3
+        },
+        {
+          "id": "gain_tavern_keeper_trust",
+          "description": "Earn the tavern keeper's cooperation",
+          "type": "optional",
+          "visible": true,
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "aggressive_confrontation",
+      "act": 1,
+      "title": "Tensions Escalate",
+      "description": "Your aggressive approach has turned the village against you.",
+      "setting": {
+        "location": "village_square",
+        "timeOfDay": "evening",
+        "atmosphere": "hostile, confrontational"
+      },
+      "entryRequirements": [
+        {
+          "type": "stat",
+          "condition": "aggressive_actions",
+          "value": 3,
+          "operator": ">="
+        }
+      ],
+      "narrativeGuidance": {
+        "openingText": "Your aggressive tactics have backfired. Villagers emerge from their homes, some carrying improvised weapons. What started as an investigation has become a standoff. The village elder steps forward, his face grave with concern and anger.",
+        "moodProgression": [
+          "Rising tension as villagers gather",
+          "Confrontational dialogue with consequences",
+          "Resolution through force or diplomacy"
+        ]
+      },
+      "quickActions": [
+        {
+          "id": "apologize_sincerely",
+          "label": "Apologize and explain your purpose",
+          "description": "Try to defuse the situation",
+          "icon": "🤝",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "village_reputation": 20,
+              "aggressive_actions": -1
+            },
+            "narrative": "redemption_path"
+          }
+        },
+        {
+          "id": "double_down",
+          "label": "Stand your ground aggressively",
+          "description": "Refuse to back down",
+          "icon": "⚔️",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "village_reputation": -30,
+              "aggressive_actions": 2
+            },
+            "triggersEvent": "village_combat"
+          }
+        },
+        {
+          "id": "strategic_withdrawal",
+          "label": "Withdraw tactically",
+          "description": "Leave to gather information elsewhere",
+          "icon": "🏃",
+          "visible": true,
+          "effects": {
+            "progressStory": true,
+            "narrative": "alternative_investigation"
+          }
+        }
+      ]
+    }
+  ],
+  "characters": [
+    {
+      "id": "village_elder",
+      "name": "Elder Thomsen",
+      "description": "A weathered man with knowing eyes and the respect of the entire village",
+      "personality": ["wise", "secretive", "protective", "traditional"],
+      "role": "informant",
+      "stats": {
+        "wisdom": 18,
+        "charisma": 16,
+        "health": 60
+      },
+      "knowledge": ["village_history", "merchant_routes", "old_legends", "recent_disappearances"],
+      "secrets": ["knows_merchant_was_investigating", "aware_of_supernatural_elements"],
+      "relationships": {
+        "player": "neutral",
+        "tavern_keeper": "trusted_friend",
+        "missing_merchant": "suspicious_of"
+      },
+      "dialogueTrees": {
+        "initial_meeting": {
+          "text": "Stranger, you arrive at a troubled time. If you're here about Garrett the merchant, tread carefully. Some mysteries are better left buried.",
+          "playerOptions": [
+            {
+              "text": "Tell me what happened to Garrett",
+              "requirements": [
+                {
+                  "type": "stat",
+                  "condition": "village_reputation",
+                  "value": 0,
+                  "operator": ">="
+                }
+              ],
+              "effects": {
+                "statChanges": {
+                  "merchant_clues": 2,
+                  "village_elder": 5
+                }
+              },
+              "leadsTo": "merchant_details"
+            },
+            {
+              "text": "I demand answers about the merchant!",
+              "effects": {
+                "statChanges": {
+                  "village_reputation": -10,
+                  "aggressive_actions": 1,
+                  "village_elder": -15
+                }
+              },
+              "leadsTo": "defensive_response"
+            }
+          ]
+        },
+        "merchant_details": {
+          "text": "Garrett was... different in his final days. Asked strange questions about old stories, places that should be left alone. He vanished three nights past, leaving everything behind. The tavern keeper might know more.",
+          "reveals": ["merchant_investigating_supernatural", "tavern_importance", "timeline_established"]
+        }
+      }
+    },
+    {
+      "id": "tavern_keeper",
+      "name": "Rhea",
+      "description": "The tavern keeper with sharp eyes and hidden courage",
+      "personality": ["observant", "protective", "secretly_brave", "intuitive"],
+      "role": "ally",
+      "stats": {
+        "intelligence": 14,
+        "charisma": 16,
+        "courage": 12
+      },
+      "knowledge": ["merchant_final_night", "local_gossip", "herb_lore", "tavern_secrets"],
+      "secrets": ["merchant_left_something_behind", "knows_about_old_dangers"],
+      "companionAbilities": [
+        {
+          "id": "local_knowledge",
+          "name": "Village Insider",
+          "description": "Provides hints about villager moods and local secrets",
+          "type": "passive"
+        },
+        {
+          "id": "herbal_remedy",
+          "name": "Healing Herbs",
+          "description": "Can provide minor healing using local plants",
+          "type": "active",
+          "cooldown": "per_beat"
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "merchants_ledger",
+      "name": "Garrett's Ledger",
+      "description": "A leather-bound book with recent transactions and increasingly frantic personal notes",
+      "type": "quest_item",
+      "properties": ["readable", "evidence", "valuable"],
+      "effects": {
+        "statModifiers": {
+          "merchant_clues": 3,
+          "investigation_progress": 2
+        },
+        "revealsInformation": ["merchant_fear", "supernatural_investigation", "final_destination"],
+        "unlocksPath": "darkwood_investigation"
+      },
+      "acquisitionMethod": "found_at_merchants_table_with_tavern_keeper_help"
+    },
+    {
+      "id": "village_token",
+      "name": "Elder's Token of Trust",
+      "description": "A carved wooden medallion showing you have the elder's blessing",
+      "type": "key",
+      "properties": ["valuable", "tradeable"],
+      "effects": {
+        "statModifiers": {
+          "village_reputation": 20,
+          "villagers_general": 15
+        },
+        "narrative": "villagers_respect_elder_judgment"
+      },
+      "requirements": [
+        {
+          "type": "stat",
+          "condition": "village_elder",
+          "value": 30,
+          "operator": ">="
+        }
+      ]
+    }
+  ],
+  "endings": [
+    {
+      "id": "hero_ending",
+      "title": "The Village Hero",
+      "description": "You save the village and become a local legend",
+      "category": "good",
+      "requirements": [
+        {
+          "type": "stat",
+          "condition": "village_reputation",
+          "value": 80,
+          "operator": ">="
+        },
+        {
+          "type": "objective",
+          "condition": "save_merchant"
+        },
+        {
+          "type": "stat",
+          "condition": "merchant_clues",
+          "value": 5,
+          "operator": ">="
+        }
+      ],
+      "narrative": "Your heroic actions have saved Millhaven. The villagers celebrate your victory, and Elder Thomsen formally welcomes you as an honorary member of the community. Garrett the merchant is found alive, and the supernatural threat is ended forever.",
+      "consequences": {
+        "worldState": "Village safe and prosperous",
+        "characterFates": {
+          "village_elder": "Becomes your lifelong friend and advisor",
+          "tavern_keeper": "Names a drink after your heroic deeds"
+        },
+        "playerLegacy": "Remembered as the Hero of Millhaven"
+      },
+      "rewards": {
+        "experience": 1000,
+        "items": ["hero_medallion"],
+        "achievements": ["village_savior", "master_investigator"],
+        "unlocks": ["sequel_access"]
+      }
+    },
+    {
+      "id": "detective_ending",
+      "title": "The Truth Uncovered",
+      "description": "You solve the mystery through careful investigation",
+      "category": "good",
+      "requirements": [
+        {
+          "type": "stat",
+          "condition": "investigation_progress",
+          "value": 8,
+          "operator": ">="
+        },
+        {
+          "type": "stat",
+          "condition": "merchant_clues",
+          "value": 10,
+          "operator": ">="
+        }
+      ],
+      "narrative": "Through methodical investigation, you piece together the truth behind Garrett's disappearance. While not everyone survives, you've ensured the mystery won't claim future victims.",
+      "consequences": {
+        "worldState": "Truth revealed, village changed",
+        "playerLegacy": "Respected as a thorough investigator"
+      }
+    },
+    {
+      "id": "exile_ending",
+      "title": "Driven from the Village",
+      "description": "Your aggressive approach has made you unwelcome",
+      "category": "bad",
+      "requirements": [
+        {
+          "type": "stat",
+          "condition": "village_reputation",
+          "value": -50,
+          "operator": "<="
+        },
+        {
+          "type": "stat",
+          "condition": "aggressive_actions",
+          "value": 5,
+          "operator": ">="
+        }
+      ],
+      "narrative": "Your heavy-handed tactics have turned the entire village against you. You're forced to leave Millhaven with more questions than answers, and Garrett's fate remains unknown.",
+      "consequences": {
+        "worldState": "Village remains threatened",
+        "playerLegacy": "Remembered as a dangerous outsider"
+      }
+    }
+  ],
+  "aiGuidance": {
+    "toneProgression": {
+      "act1": "mysterious and foreboding, building tension through investigation and social dynamics",
+      "climax": "intense resolution based on player's investigative approach and village relationships"
+    },
+    "narrativeStyle": {
+      "perspective": "second-person",
+      "tense": "present",
+      "descriptiveLevel": "moderate"
+    },
+    "playerAgency": "Always allow creative solutions beyond the quick actions. Reward both careful investigation and bold action, but with different consequences. Players should feel their approach matters.",
+    "mechanicsHandling": "Never mention numbers or stats directly. Describe reputation through NPC reactions: 'The villagers eye you warily' instead of 'reputation -10'. Show investigation progress through available information and new options.",
+    "responseToPlayerMood": {
+      "aggressive": "NPCs become defensive, some information becomes harder to access, but intimidation may work on weaker characters",
+      "diplomatic": "More information becomes available through dialogue, NPCs more willing to help",
+      "investigative": "Careful observation reveals additional clues and hidden options",
+      "impatient": "Rushing may miss important details but can prevent some negative events"
+    },
+    "encouragedElements": [
+      "Village social dynamics and reputation consequences",
+      "Multiple approaches to the same investigative challenges", 
+      "Character development through dialogue choices",
+      "Environmental storytelling through village details",
+      "Meaningful choice consequences that affect story progression"
+    ],
+    "forbiddenTopics": [
+      "Graphic violence beyond fantasy adventure levels",
+      "Explicit content",
+      "Real-world political references"
+    ]
+  },
+  "functionCalls": [
+    {
+      "name": "updatePlayerStats",
+      "description": "Update player's hidden stats based on actions and investigation progress",
+      "parameters": {
+        "health": "number (-100 to 100) - physical condition",
+        "village_reputation": "number (-100 to 100) - how villagers perceive player",
+        "investigation_progress": "number (0 to 20) - advancement in solving the mystery",
+        "merchant_clues": "number (0 to 15) - clues discovered about Garrett's fate",
+        "aggressive_actions": "number (0 to 10) - tracking confrontational behavior"
+      },
+      "restrictions": [
+        "Don't change reputation by more than 30 points in a single action",
+        "Investigation progress should increment gradually",
+        "Aggressive actions should have cumulative negative effects"
+      ],
+      "examples": [
+        {
+          "situation": "Player speaks respectfully to village elder",
+          "call": {
+            "village_reputation": 10,
+            "investigation_progress": 1
+          }
+        },
+        {
+          "situation": "Player threatens a villager for information",
+          "call": {
+            "village_reputation": -15,
+            "aggressive_actions": 1,
+            "merchant_clues": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "updateRelationship",
+      "description": "Modify relationships with specific characters",
+      "parameters": {
+        "characterId": "string - character identifier (village_elder, tavern_keeper, etc.)",
+        "change": "number (-50 to 50) - relationship modifier",
+        "reason": "string - what caused the change"
+      }
+    },
+    {
+      "name": "addItem",
+      "description": "Give item to player inventory",
+      "parameters": {
+        "itemId": "string - item identifier"
+      }
+    },
+    {
+      "name": "progressStory",
+      "description": "Move to next story beat or unlock new content",
+      "parameters": {
+        "beatId": "string - target beat identifier",
+        "transition": "string - narrative transition description"
+      }
+    },
+    {
+      "name": "unlockQuickAction",
+      "description": "Make a hidden quick action visible based on story progress",
+      "parameters": {
+        "actionId": "string - action to reveal",
+        "beatId": "string - which beat to modify"
+      }
+    },
+    {
+      "name": "checkInvestigationProgress",
+      "description": "Determine what information/options are available based on clues gathered",
+      "parameters": {
+        "currentClues": "number - merchant_clues stat value",
+        "investigationLevel": "number - investigation_progress stat value"
+      }
+    },
+    {
+      "name": "triggerVillageReaction",
+      "description": "Create village-wide response based on reputation and actions",
+      "parameters": {
+        "reputation": "number - current village reputation",
+        "triggerEvent": "string - what caused the reaction"
+      }
+    }
+  ],
+  "gameSettings": {
+    "saveSystem": {
+      "autosaveEnabled": true,
+      "checkpointBeats": ["village_arrival", "tavern_investigation"]
+    },
+    "timeManagement": {
+      "realTimeEvents": false,
+      "timePressure": false
+    }
+  }
+}

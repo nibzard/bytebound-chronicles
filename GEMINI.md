@@ -89,22 +89,20 @@ npm run typecheck # TypeScript type checking
 ## Story Development
 
 ### Story File Structure
-Stories are JSON files in `/stories/` directory with this structure:
+Each story is a self-contained JSON file in the `/stories/` directory:
 ```
 stories/
-├── metadata.json     # Story catalog
-├── story-1/
-│   ├── metadata.json # Story-specific metadata
-│   ├── beats/        # Story beats (loaded just-in-time)
-│   └── assets/       # Story assets
+├── metadata.json           # Story catalog listing all available stories
+├── tutorial-quest.json     # Complete story file with all content
+├── merchant-mystery.json   # Another complete story file
+└── darkwood-saga.json      # Each story is a single JSON file
 ```
 
 ### Adding New Stories
-1. Create story directory under `/stories/`
-2. Add metadata.json with story information
-3. Create beats as individual JSON files
-4. Update main metadata.json catalog
-5. Run `npm run validate:stories` to verify format
+1. Create a single JSON file in `/stories/` with complete story content
+2. Update the main metadata.json catalog with story reference
+3. Run `npm run validate:stories` to verify format
+4. Story file includes metadata, beats, characters, items, and endings all in one file
 
 ## Testing Strategy
 

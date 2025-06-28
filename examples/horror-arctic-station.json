@@ -1,0 +1,834 @@
+{
+  "metadata": {
+    "id": "arctic-station-horror",
+    "title": "The Last Station",
+    "description": "Isolated Arctic research station horror where survival depends on maintaining sanity while uncovering terrible truths.",
+    "author": "Bytebound Chronicles Team",
+    "version": "1.0.0",
+    "gameStyle": "horror-survival",
+    "difficulty": "hard",
+    "estimatedLength": 90,
+    "tags": ["horror", "survival", "psychological", "isolation", "supernatural"],
+    "contentWarnings": ["horror themes", "psychological tension", "isolation anxiety", "body horror"],
+    "playerInputMode": {
+      "primary": "hybrid",
+      "quickActionsEnabled": true,
+      "customActionAlwaysAvailable": true
+    }
+  },
+  "hiddenMechanics": {
+    "playerStats": {
+      "sanity": 100,
+      "fear": 0,
+      "resources": 80,
+      "trust": 50,
+      "knowledge": 0,
+      "body_temperature": 98,
+      "exhaustion": 0
+    },
+    "thresholds": {
+      "lowSanity": 30,
+      "highFear": 70,
+      "criticalResources": 20,
+      "brokenTrust": 10,
+      "hypothermia": 95,
+      "exhausted": 80
+    },
+    "environmentalEffects": {
+      "storm": {
+        "statModifiers": {
+          "sanity": -2,
+          "fear": 5,
+          "body_temperature": -1
+        },
+        "duration": 3,
+        "description": "Howling blizzard outside affects morale and temperature"
+      },
+      "power_outage": {
+        "statModifiers": {
+          "fear": 15,
+          "resources": -5,
+          "body_temperature": -2
+        },
+        "duration": -1,
+        "description": "Station systems offline, emergency power only"
+      },
+      "isolation": {
+        "statModifiers": {
+          "sanity": -1,
+          "trust": -2
+        },
+        "duration": -1,
+        "description": "Crushing loneliness of the Arctic wasteland"
+      }
+    },
+    "gameSpecificMechanics": {
+      "horrorEscalation": {
+        "level1_threshold": 20,
+        "level2_threshold": 50,
+        "level3_threshold": 80,
+        "currentLevel": 0
+      },
+      "survivalNeeds": {
+        "warmth": 100,
+        "food": 100,
+        "light": 100
+      }
+    },
+    "difficultyModifiers": {
+      "normal": {
+        "statMultipliers": {
+          "sanity": 1.0,
+          "resources": 1.0
+        },
+        "skillCheckBonus": 0
+      },
+      "hard": {
+        "statMultipliers": {
+          "sanity": 0.8,
+          "resources": 0.7
+        },
+        "skillCheckBonus": -3
+      }
+    }
+  },
+  "beats": [
+    {
+      "id": "helicopter_crash",
+      "act": 1,
+      "title": "Emergency Landing",
+      "description": "Your supply helicopter is forced down by the worsening storm.",
+      "setting": {
+        "location": "research_station_exterior",
+        "timeOfDay": "late_afternoon",
+        "weather": "blizzard",
+        "atmosphere": "isolated, foreboding",
+        "lighting": "dim_natural"
+      },
+      "narrativeGuidance": {
+        "openingText": "The helicopter's engines die as snow swirls around the Arctic research station. Static crackles from your radio—no response from the team inside. The building stands dark against the white expanse, emergency lights flickering weakly through frosted windows.",
+        "dynamicElements": {
+          "highFear": "Your hands shake uncontrollably as you approach the station, every shadow seeming to move with malevolent intent.",
+          "lowSanity": "The wind sounds almost like whispers, calling your name through the howling storm.",
+          "storm": "The blizzard intensifies, making visibility near zero and each step a struggle."
+        },
+        "moodProgression": [
+          "Initial relief at finding shelter",
+          "Growing unease at the silence",
+          "Dawning horror at what you discover"
+        ]
+      },
+      "quickActions": [
+        {
+          "id": "check_radio",
+          "label": "Try the radio again",
+          "description": "Attempt to contact the research team or outside help",
+          "icon": "📻",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "knowledge": 1,
+              "fear": 5
+            },
+            "narrative": "static_response"
+          }
+        },
+        {
+          "id": "approach_main",
+          "label": "Head to the main entrance",
+          "description": "Go directly to the station's front door",
+          "icon": "🚪",
+          "visible": true,
+          "effects": {
+            "progressStory": true
+          }
+        },
+        {
+          "id": "circle_building",
+          "label": "Walk around the station first",
+          "description": "Survey the perimeter before entering",
+          "icon": "🔄",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "knowledge": 1,
+              "resources": -5,
+              "body_temperature": -2
+            },
+            "revealsAction": "find_generator"
+          }
+        },
+        {
+          "id": "find_generator",
+          "label": "Check the backup generator",
+          "description": "Investigate the power systems",
+          "icon": "⚡",
+          "visible": false,
+          "requirements": [
+            {
+              "type": "flag",
+              "condition": "circled_building"
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "knowledge": 2
+            },
+            "unlocksPath": "power_restoration"
+          }
+        }
+      ],
+      "objectives": [
+        {
+          "id": "enter_station",
+          "description": "Get inside before the storm worsens",
+          "type": "required",
+          "visible": true,
+          "timeLimit": 5,
+          "weight": 3
+        },
+        {
+          "id": "assess_situation",
+          "description": "Determine what happened to the research team",
+          "type": "required",
+          "visible": true,
+          "weight": 2
+        }
+      ],
+      "hiddenTriggers": [
+        {
+          "condition": {
+            "type": "stat",
+            "condition": "body_temperature",
+            "value": 95,
+            "operator": "<="
+          },
+          "effect": "hypothermia_warning",
+          "description": "Player is getting dangerously cold",
+          "narrative": "Your fingers are going numb, and your breath fogs heavily in the air. You need to get warm soon."
+        }
+      ]
+    },
+    {
+      "id": "station_interior",
+      "act": 1,
+      "title": "Empty Halls",
+      "description": "Inside the station, silence and abandonment tell a disturbing story.",
+      "setting": {
+        "location": "station_main_hall",
+        "lighting": "emergency_only",
+        "atmosphere": "eerie silence"
+      },
+      "entryRequirements": [
+        {
+          "type": "objective",
+          "condition": "enter_station",
+          "value": true
+        }
+      ],
+      "narrativeGuidance": {
+        "openingText": "The station's interior is cold and still. Emergency lighting casts long shadows down empty corridors. Personal belongings are scattered about—coffee cups half-full, computers still running, but no sign of the six-person research team.",
+        "dynamicElements": {
+          "highFear": "Every creak of the building makes you jump. The shadows seem to move when you're not looking directly at them.",
+          "lowSanity": "You start hearing voices in the ventilation system, conversations that couldn't possibly be there.",
+          "power_outage": "Without main power, the station feels more like a tomb than a shelter."
+        }
+      },
+      "quickActions": [
+        {
+          "id": "check_logs",
+          "label": "Check the computer logs",
+          "description": "Read the research team's final entries",
+          "icon": "💻",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "knowledge": 2,
+              "fear": 10
+            },
+            "narrative": "disturbing_entries",
+            "addsItem": "research_logs"
+          }
+        },
+        {
+          "id": "search_quarters",
+          "label": "Search the living quarters",
+          "description": "Look through the team's personal spaces",
+          "icon": "🛏️",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "knowledge": 1,
+              "resources": 10,
+              "fear": 5
+            },
+            "addsItem": "supply_cache"
+          }
+        },
+        {
+          "id": "investigate_lab",
+          "label": "Examine the research lab",
+          "description": "Study the team's scientific work",
+          "icon": "🔬",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "knowledge": 3,
+              "fear": 15
+            },
+            "addsItem": "specimen_notes"
+          }
+        },
+        {
+          "id": "follow_sounds",
+          "label": "Follow the scratching sounds",
+          "description": "Investigate the noise coming from the walls",
+          "icon": "👂",
+          "visible": false,
+          "requirements": [
+            {
+              "type": "stat",
+              "condition": "fear",
+              "value": 20,
+              "operator": ">="
+            }
+          ],
+          "effects": {
+            "statChanges": {
+              "sanity": -10,
+              "knowledge": 2
+            },
+            "narrative": "wall_discovery"
+          }
+        }
+      ],
+      "encounters": [
+        {
+          "id": "phantom_researcher",
+          "type": "conditional",
+          "trigger": {
+            "type": "stat",
+            "condition": "sanity",
+            "value": 60,
+            "operator": "<="
+          },
+          "description": "You glimpse a figure in a lab coat moving between the shadows, but when you look directly, nothing is there.",
+          "quickActions": [
+            {
+              "id": "follow_figure",
+              "label": "Follow the figure",
+              "effects": {
+                "statChanges": {
+                  "sanity": -5,
+                  "fear": 10
+                }
+              }
+            },
+            {
+              "id": "ignore_hallucination",
+              "label": "Convince yourself it's not real",
+              "effects": {
+                "statChanges": {
+                  "sanity": 5
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "skillChecks": [
+        {
+          "trigger": "check_logs",
+          "stat": "sanity",
+          "difficulty": 15,
+          "successText": "You steel yourself and read through the increasingly disturbing log entries, learning valuable information about what happened.",
+          "failureText": "The content of the logs is too disturbing. You can only skim the surface before your mind rejects what you're reading.",
+          "criticalFailure": {
+            "threshold": 5,
+            "text": "The logs reveal horrors that shatter your perception of reality. You slam the computer shut, but the images are burned into your mind.",
+            "effects": {
+              "statChanges": {
+                "sanity": -15,
+                "fear": 25
+              }
+            }
+          }
+        }
+      ],
+      "hiddenTriggers": [
+        {
+          "condition": {
+            "type": "stat",
+            "condition": "knowledge",
+            "value": 3,
+            "operator": ">="
+          },
+          "effect": "unlock_basement",
+          "description": "Research notes mention sealed basement levels",
+          "narrative": "The research notes reference a restricted basement level that wasn't on any station blueprints you saw."
+        },
+        {
+          "condition": {
+            "type": "stat",
+            "condition": "sanity",
+            "value": 50,
+            "operator": "<="
+          },
+          "effect": "paranoia_events",
+          "description": "Player starts experiencing hallucinations",
+          "narrative": "The isolation and stress are getting to you. You're starting to see and hear things that might not be there."
+        }
+      ]
+    },
+    {
+      "id": "basement_descent",
+      "act": 2,
+      "title": "What Lies Beneath",
+      "description": "The hidden basement levels reveal the true horror.",
+      "setting": {
+        "location": "research_basement",
+        "lighting": "flashlight_only",
+        "atmosphere": "claustrophobic, threatening"
+      },
+      "entryRequirements": [
+        {
+          "type": "flag",
+          "condition": "basement_unlocked"
+        },
+        {
+          "type": "item",
+          "condition": "flashlight"
+        }
+      ],
+      "narrativeGuidance": {
+        "openingText": "The basement levels weren't on any station blueprints you saw. Your flashlight cuts through absolute darkness, revealing makeshift walls and hastily installed containment equipment. The air tastes metallic.",
+        "dynamicElements": {
+          "lowSanity": "The walls seem to pulse with a life of their own. Your flashlight beam wavers as your hands shake uncontrollably.",
+          "highFear": "Every shadow could hide something monstrous. Your heart pounds so loudly you're sure whatever lurks here can hear it."
+        }
+      },
+      "quickActions": [
+        {
+          "id": "examine_containment",
+          "label": "Investigate the containment equipment",
+          "description": "Study the makeshift containment systems",
+          "icon": "🔒",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "knowledge": 3,
+              "fear": 20
+            },
+            "narrative": "broken_containment"
+          }
+        },
+        {
+          "id": "read_warnings",
+          "label": "Read the warning signs on the walls",
+          "description": "Decipher the hastily scrawled warnings",
+          "icon": "⚠️",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "knowledge": 2,
+              "sanity": -5
+            }
+          }
+        },
+        {
+          "id": "investigate_breathing",
+          "label": "Follow the breathing sounds",
+          "description": "Move toward the wet, labored breathing",
+          "icon": "💨",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "fear": 30
+            },
+            "progressStory": true,
+            "narrative": "creature_encounter"
+          }
+        },
+        {
+          "id": "retreat_immediately",
+          "label": "Get out of here immediately",
+          "description": "Flee back to the upper levels",
+          "icon": "🏃",
+          "visible": true,
+          "effects": {
+            "statChanges": {
+              "sanity": 10,
+              "fear": -10
+            },
+            "narrative": "hasty_retreat"
+          }
+        }
+      ],
+      "encounters": [
+        {
+          "id": "creature_reveal",
+          "type": "triggered",
+          "description": "Your light illuminates something that shouldn't exist—a mass of pale flesh and too many eyes, wearing the torn remains of a research team jacket. It turns toward you with predatory intelligence.",
+          "quickActions": [
+            {
+              "id": "fight_creature",
+              "label": "Fight for your life",
+              "requirements": [
+                {
+                  "type": "item",
+                  "condition": "weapon"
+                }
+              ],
+              "effects": {
+                "narrative": "desperate_combat"
+              }
+            },
+            {
+              "id": "use_flare",
+              "label": "Use emergency flare",
+              "requirements": [
+                {
+                  "type": "item",
+                  "condition": "emergency_flare"
+                }
+              ],
+              "effects": {
+                "narrative": "flare_escape",
+                "removesItem": "emergency_flare"
+              }
+            },
+            {
+              "id": "try_communication",
+              "label": "Try to communicate",
+              "requirements": [
+                {
+                  "type": "stat",
+                  "condition": "sanity",
+                  "value": 60,
+                  "operator": ">="
+                }
+              ],
+              "effects": {
+                "narrative": "tragic_recognition"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "characters": [
+    {
+      "id": "dr_chen_voice",
+      "name": "Dr. Sarah Chen",
+      "description": "Team leader whose voice echoes through static recordings",
+      "personality": ["professional", "increasingly_desperate", "protective", "methodical"],
+      "role": "witness",
+      "knowledge": ["specimen_origin", "containment_protocols", "team_fate"],
+      "dialogueTrees": {
+        "final_log": {
+          "text": "[STATIC] Day 15... the specimen has... changed. We thought we could contain it, study it. God forgive us. If anyone finds this, don't go into the basement. Seal this place. Let it die with us.",
+          "reveals": ["basement_danger", "creature_origin", "team_sacrifice"]
+        },
+        "earlier_log": {
+          "text": "The ice core samples contained something... organic. Preserved for millennia. It's responding to warmth, to our presence. Marcus thinks we should report this, but the implications...",
+          "reveals": ["specimen_discovery", "team_debate"]
+        }
+      }
+    },
+    {
+      "id": "phantom_marcus",
+      "name": "Dr. Marcus Webb",
+      "description": "A team member whose presence lingers in the station",
+      "personality": ["paranoid", "protective", "guilt_ridden"],
+      "role": "witness",
+      "dialogueTrees": {
+        "warning_message": {
+          "conditions": [
+            {
+              "type": "stat",
+              "condition": "sanity",
+              "value": 40,
+              "operator": "<="
+            }
+          ],
+          "text": "You shouldn't have come here. We tried to stop it, but it was too late. The ice... it was never just ice.",
+          "reveals": ["transformation_process"]
+        }
+      }
+    }
+  ],
+  "items": [
+    {
+      "id": "research_logs",
+      "name": "Research Terminal Logs",
+      "description": "Digital records of the team's final days",
+      "type": "clue",
+      "properties": ["readable", "evidence"],
+      "effects": {
+        "revealsInformation": ["specimen_discovery", "team_deterioration", "containment_failure"],
+        "narrative": "reveals_timeline"
+      }
+    },
+    {
+      "id": "specimen_notes",
+      "name": "Specimen Analysis Notes",
+      "description": "Handwritten notes about the discovered organism",
+      "type": "clue",
+      "properties": ["readable", "evidence"],
+      "effects": {
+        "revealsInformation": ["creature_biology", "transformation_process"],
+        "statModifiers": {
+          "knowledge": 3,
+          "fear": 15
+        }
+      }
+    },
+    {
+      "id": "emergency_flare",
+      "name": "Emergency Flare",
+      "description": "Bright red flare for signaling or protection",
+      "type": "tool",
+      "properties": ["usable"],
+      "uses": 1,
+      "effects": {
+        "narrative": "temporary_light_and_heat"
+      },
+      "combatProperties": {
+        "special": ["blinds_creature", "temporary_retreat"]
+      }
+    },
+    {
+      "id": "supply_cache",
+      "name": "Emergency Supplies",
+      "description": "Food, water, and basic survival gear",
+      "type": "consumable",
+      "properties": ["usable"],
+      "uses": 3,
+      "effects": {
+        "statModifiers": {
+          "resources": 20,
+          "body_temperature": 5
+        }
+      }
+    },
+    {
+      "id": "thermal_blanket",
+      "name": "Thermal Emergency Blanket",
+      "description": "Metallic survival blanket that retains body heat",
+      "type": "tool",
+      "properties": ["equippable"],
+      "effects": {
+        "statModifiers": {
+          "body_temperature": 10
+        }
+      }
+    },
+    {
+      "id": "station_keycard",
+      "name": "Security Keycard",
+      "description": "Access card found on the floor, blood-stained",
+      "type": "key",
+      "properties": ["evidence"],
+      "effects": {
+        "unlocksPath": "secure_areas"
+      }
+    }
+  ],
+  "endings": [
+    {
+      "id": "heroic_sacrifice",
+      "title": "The Ultimate Sacrifice",
+      "description": "You destroy the station to contain the threat",
+      "category": "good",
+      "requirements": [
+        {
+          "type": "choice",
+          "condition": "detonate_charges"
+        },
+        {
+          "type": "stat",
+          "condition": "knowledge",
+          "value": 8,
+          "operator": ">="
+        },
+        {
+          "type": "stat",
+          "condition": "sanity",
+          "value": 30,
+          "operator": ">="
+        }
+      ],
+      "narrative": "The explosion lights up the Arctic night like a second sun. The station, the creature, and the threat are consumed in cleansing fire. Your sacrifice ensures the horror never spreads beyond this desolate place.",
+      "consequences": {
+        "worldState": "Threat contained but at ultimate cost",
+        "playerLegacy": "Heroic sacrifice saves countless lives"
+      },
+      "rewards": {
+        "achievements": ["ultimate_sacrifice", "world_saver"],
+        "unlocks": ["memorial_ending_variant"]
+      }
+    },
+    {
+      "id": "survivor_ending",
+      "title": "Against All Odds",
+      "description": "You escape and call for a military response",
+      "category": "good",
+      "requirements": [
+        {
+          "type": "stat",
+          "condition": "sanity",
+          "value": 40,
+          "operator": ">="
+        },
+        {
+          "type": "objective",
+          "condition": "escape_station"
+        },
+        {
+          "type": "item",
+          "condition": "evidence_sample"
+        }
+      ],
+      "narrative": "The rescue helicopter arrives just as the storm clears. You've survived, and your evidence convinces the authorities to quarantine the site. The knowledge of what lurks beneath the ice will haunt you forever, but the world is safe.",
+      "consequences": {
+        "worldState": "Site quarantined, threat monitored",
+        "playerLegacy": "Traumatized but victorious survivor"
+      }
+    },
+    {
+      "id": "madness_ending",
+      "title": "Lost in the Ice",
+      "description": "The isolation and horror claim your sanity",
+      "category": "bad",
+      "requirements": [
+        {
+          "type": "stat",
+          "condition": "sanity",
+          "value": 20,
+          "operator": "<="
+        }
+      ],
+      "narrative": "The search team finds you days later, catatonic and mumbling about eyes in the dark. Some mysteries are too terrible for the human mind to survive intact. You spend your remaining days in a facility, drawing pictures of things that shouldn't exist.",
+      "consequences": {
+        "worldState": "Threat remains undiscovered",
+        "playerLegacy": "Cautionary tale of isolation's toll"
+      }
+    },
+    {
+      "id": "transformation_ending",
+      "title": "Joining the Research",
+      "description": "You become part of the station's eternal experiment",
+      "category": "bad",
+      "requirements": [
+        {
+          "type": "stat",
+          "condition": "fear",
+          "value": 90,
+          "operator": ">="
+        },
+        {
+          "type": "choice",
+          "condition": "accept_creature_embrace"
+        }
+      ],
+      "narrative": "The creature's touch is cold but strangely comforting. As the transformation begins, you understand what the research team discovered. You become the next guardian of ancient secrets, waiting in the ice for the next visitor.",
+      "consequences": {
+        "worldState": "Threat grows stronger",
+        "playerLegacy": "Becomes part of the horror"
+      }
+    }
+  ],
+  "aiGuidance": {
+    "toneProgression": {
+      "act1": "building dread through environmental details and isolation",
+      "act2": "escalating horror with supernatural elements and direct threats",
+      "climax": "overwhelming terror balanced with moments of human courage"
+    },
+    "narrativeStyle": {
+      "perspective": "second-person",
+      "tense": "present",
+      "descriptiveLevel": "detailed"
+    },
+    "playerAgency": "Allow creative survival solutions. Reward cautious play but punish excessive passivity. Every choice should feel consequential.",
+    "mechanicsHandling": "Describe psychological effects viscerally - 'your hands shake uncontrollably' instead of showing fear numbers. Make the environment feel alive and hostile.",
+    "responseToPlayerMood": {
+      "aggressive": "Hasty actions increase danger but may reveal important information",
+      "cautious": "Careful approach reduces immediate danger but may increase psychological pressure",
+      "panicked": "Fear-driven choices lead to mistakes and escalating terror",
+      "methodical": "Scientific approach helps process horror but may expose player to more disturbing truths"
+    },
+    "encouragedElements": [
+      "Atmospheric descriptions of cold, isolation, and darkness",
+      "Gradual revelation of horror through environmental storytelling",
+      "Psychological pressure through resource management",
+      "Body horror elements balanced with cosmic dread",
+      "Moments of human vulnerability and courage"
+    ],
+    "forbiddenTopics": [
+      "Graphic gore beyond cosmic horror levels",
+      "Torture or sadistic violence",
+      "Real-world mental health conditions trivialized"
+    ]
+  },
+  "functionCalls": [
+    {
+      "name": "updatePlayerStats",
+      "description": "Update psychological and survival stats",
+      "parameters": {
+        "sanity": "number (-100 to 100) - mental stability",
+        "fear": "number (0 to 100) - current terror level",
+        "resources": "number (0 to 100) - supplies and energy",
+        "trust": "number (0 to 100) - faith in reality/others",
+        "knowledge": "number (0 to 10) - understanding of the horror",
+        "body_temperature": "number (90 to 105) - physical condition",
+        "exhaustion": "number (0 to 100) - fatigue level"
+      },
+      "restrictions": [
+        "Avoid sudden massive stat changes unless dramatically justified",
+        "Balance horror escalation with player agency"
+      ],
+      "examples": [
+        {
+          "situation": "Player discovers disturbing research notes",
+          "call": {
+            "knowledge": 2,
+            "fear": 15,
+            "sanity": -5
+          }
+        },
+        {
+          "situation": "Player uses supplies to warm up",
+          "call": {
+            "body_temperature": 5,
+            "resources": -10
+          }
+        }
+      ]
+    },
+    {
+      "name": "triggerEnvironmentalEffect",
+      "description": "Apply environmental pressure to stats",
+      "parameters": {
+        "effect": "string (storm, power_outage, isolation)",
+        "duration": "number (beats, -1 for permanent)"
+      }
+    },
+    {
+      "name": "checkPsychologicalState",
+      "description": "Determine narrative changes based on mental state",
+      "parameters": {
+        "stat": "string (sanity, fear, exhaustion)",
+        "threshold": "number"
+      }
+    },
+    {
+      "name": "escalateHorror",
+      "description": "Increase horror level based on player progress",
+      "parameters": {
+        "newLevel": "number (1-3)",
+        "trigger": "string (knowledge_threshold, time_passed, location_entered)"
+      }
+    }
+  ]
+}

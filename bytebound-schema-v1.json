@@ -1,0 +1,1268 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://byteboundchronicles.com/schemas/game-v1.json",
+  "title": "Bytebound Chronicles Universal Game Schema",
+  "description": "Universal JSON schema for narrative adventure games in the Bytebound Chronicles engine, supporting multiple genres with hidden mechanics and AI-driven storytelling",
+  "version": "1.0.0",
+  "type": "object",
+  "required": ["metadata", "hiddenMechanics", "beats", "aiGuidance", "functionCalls"],
+  "additionalProperties": false,
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "title": "Game Metadata",
+      "description": "Essential information about the game",
+      "required": ["id", "title", "description", "version", "gameStyle"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "Unique identifier for the game (kebab-case)"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Display title of the game"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "description": "Brief description of the game's premise"
+        },
+        "author": {
+          "type": "string",
+          "description": "Creator(s) of the game"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Semantic version number"
+        },
+        "gameStyle": {
+          "type": "string",
+          "enum": ["rpg-fantasy", "horror-survival", "heist-crime", "romance-dating", "sci-fi-exploration", "time-loop-mystery", "thriller-investigation", "comedy-adventure", "historical-drama", "custom"],
+          "description": "Primary game style/genre"
+        },
+        "difficulty": {
+          "type": "string",
+          "enum": ["easy", "normal", "hard", "expert"],
+          "default": "normal",
+          "description": "Intended difficulty level"
+        },
+        "estimatedLength": {
+          "type": "integer",
+          "minimum": 15,
+          "maximum": 1200,
+          "description": "Estimated play time in minutes"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["mystery", "fantasy", "horror", "romance", "sci-fi", "crime", "thriller", "comedy", "historical", "psychological", "supernatural", "investigation", "combat", "stealth", "social", "strategy", "survival", "exploration", "time-travel", "magic"]
+          },
+          "maxItems": 8,
+          "description": "Genre and content tags"
+        },
+        "contentWarnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Content warnings for sensitive material"
+        },
+        "playerInputMode": {
+          "type": "object",
+          "description": "Configuration for player input handling",
+          "properties": {
+            "primary": {
+              "type": "string",
+              "enum": ["freeText", "quickActions", "hybrid"],
+              "default": "hybrid",
+              "description": "Primary input method"
+            },
+            "quickActionsEnabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether to show contextual quick actions"
+            },
+            "customActionAlwaysAvailable": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether custom text input is always available"
+            }
+          }
+        }
+      }
+    },
+    "hiddenMechanics": {
+      "type": "object",
+      "title": "Hidden Game Mechanics",
+      "description": "Invisible stats and mechanics that drive narrative without showing numbers to players",
+      "required": ["playerStats"],
+      "additionalProperties": true,
+      "properties": {
+        "playerStats": {
+          "type": "object",
+          "description": "Core player statistics tracked invisibly",
+          "patternProperties": {
+            "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+              "anyOf": [
+                {"type": "number"},
+                {"type": "integer"}
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "thresholds": {
+          "type": "object",
+          "description": "Important breakpoints that trigger narrative changes",
+          "patternProperties": {
+            "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false
+        },
+        "relationships": {
+          "type": "object",
+          "description": "Character relationship tracking",
+          "patternProperties": {
+            "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+              "type": "number",
+              "minimum": -100,
+              "maximum": 100
+            }
+          },
+          "additionalProperties": false
+        },
+        "gameSpecificMechanics": {
+          "type": "object",
+          "description": "Genre-specific mechanics (e.g., loop tracking, heat levels, sanity)",
+          "additionalProperties": true
+        },
+        "environmentalEffects": {
+          "type": "object",
+          "description": "Environmental conditions that modify stats over time",
+          "patternProperties": {
+            "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+              "type": "object",
+              "properties": {
+                "statModifiers": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+                      "type": "number"
+                    }
+                  }
+                },
+                "duration": {
+                  "type": "integer",
+                  "description": "Duration in beats (-1 for permanent)"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Human-readable description of the effect"
+                }
+              }
+            }
+          }
+        },
+        "difficultyModifiers": {
+          "type": "object",
+          "description": "Stat adjustments based on difficulty setting",
+          "properties": {
+            "easy": {
+              "$ref": "#/definitions/difficultySettings"
+            },
+            "normal": {
+              "$ref": "#/definitions/difficultySettings"
+            },
+            "hard": {
+              "$ref": "#/definitions/difficultySettings"
+            },
+            "expert": {
+              "$ref": "#/definitions/difficultySettings"
+            }
+          }
+        }
+      }
+    },
+    "beats": {
+      "type": "array",
+      "title": "Story Beats",
+      "description": "Sequential narrative segments that form the game's structure",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/storyBeat"
+      }
+    },
+    "characters": {
+      "type": "array",
+      "title": "Game Characters",
+      "description": "NPCs and other characters in the game",
+      "items": {
+        "$ref": "#/definitions/character"
+      }
+    },
+    "items": {
+      "type": "array",
+      "title": "Game Items",
+      "description": "Items, tools, clues, and objects that can be acquired",
+      "items": {
+        "$ref": "#/definitions/item"
+      }
+    },
+    "endings": {
+      "type": "array",
+      "title": "Game Endings",
+      "description": "Possible conclusions based on player choices and stats",
+      "items": {
+        "$ref": "#/definitions/ending"
+      }
+    },
+    "aiGuidance": {
+      "type": "object",
+      "title": "AI Director Guidance",
+      "description": "Instructions for AI to maintain consistent tone and style",
+      "required": ["toneProgression"],
+      "properties": {
+        "toneProgression": {
+          "type": "object",
+          "description": "How tone/mood should evolve through the story",
+          "patternProperties": {
+            "^(act[1-9]|act[1-9][0-9]|beginning|middle|end|climax)$": {
+              "type": "string",
+              "description": "Tone description for this story phase"
+            }
+          }
+        },
+        "narrativeStyle": {
+          "type": "object",
+          "properties": {
+            "perspective": {
+              "type": "string",
+              "enum": ["second-person", "third-person", "first-person"],
+              "default": "second-person",
+              "description": "Narrative perspective"
+            },
+            "tense": {
+              "type": "string",
+              "enum": ["present", "past"],
+              "default": "present",
+              "description": "Narrative tense"
+            },
+            "descriptiveLevel": {
+              "type": "string",
+              "enum": ["minimal", "moderate", "detailed", "cinematic"],
+              "default": "moderate",
+              "description": "Amount of environmental/atmospheric description"
+            }
+          }
+        },
+        "playerAgency": {
+          "type": "string",
+          "description": "How to handle creative player solutions beyond quick actions"
+        },
+        "mechanicsHandling": {
+          "type": "string",
+          "description": "How to present mechanical effects narratively without showing numbers"
+        },
+        "responseToPlayerMood": {
+          "type": "object",
+          "description": "How AI should adapt based on player behavior patterns",
+          "patternProperties": {
+            "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+              "type": "string"
+            }
+          }
+        },
+        "forbiddenTopics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Topics/content the AI should avoid"
+        },
+        "encouragedElements": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Narrative elements to emphasize"
+        }
+      }
+    },
+    "functionCalls": {
+      "type": "array",
+      "title": "AI Function Definitions",
+      "description": "Available function calls for AI to modify game state",
+      "items": {
+        "$ref": "#/definitions/functionCall"
+      }
+    },
+    "gameSettings": {
+      "type": "object",
+      "title": "Game Configuration",
+      "description": "Optional configuration settings",
+      "properties": {
+        "saveSystem": {
+          "type": "object",
+          "properties": {
+            "autosaveEnabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "checkpointBeats": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Beat IDs that serve as save checkpoints"
+            }
+          }
+        },
+        "timeManagement": {
+          "type": "object",
+          "properties": {
+            "realTimeEvents": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether some events happen in real time"
+            },
+            "timePressure": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether there are time-limited decisions"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "storyBeat": {
+      "type": "object",
+      "title": "Story Beat",
+      "description": "A discrete narrative segment",
+      "required": ["id", "title", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]+$",
+          "description": "Unique identifier for this beat"
+        },
+        "act": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Which act this beat belongs to"
+        },
+        "title": {
+          "type": "string",
+          "description": "Display title for this beat"
+        },
+        "description": {
+          "type": "string",
+          "description": "Brief description of what happens in this beat"
+        },
+        "setting": {
+          "type": "object",
+          "description": "Environmental context for this beat",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "Where this beat takes place"
+            },
+            "timeOfDay": {
+              "type": "string",
+              "enum": ["dawn", "morning", "midday", "afternoon", "evening", "night", "midnight", "any"],
+              "description": "Time when this beat occurs"
+            },
+            "weather": {
+              "type": "string",
+              "description": "Weather conditions"
+            },
+            "atmosphere": {
+              "type": "string",
+              "description": "Emotional/atmospheric tone"
+            },
+            "lighting": {
+              "type": "string",
+              "description": "Lighting conditions"
+            }
+          }
+        },
+        "entryRequirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/requirement"
+          },
+          "description": "Conditions needed to enter this beat"
+        },
+        "narrativeGuidance": {
+          "type": "object",
+          "description": "Instructions for presenting this beat",
+          "properties": {
+            "openingText": {
+              "type": "string",
+              "description": "Suggested opening description"
+            },
+            "dynamicElements": {
+              "type": "object",
+              "description": "Conditional narrative elements based on stats",
+              "patternProperties": {
+                "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+                  "type": "string"
+                }
+              }
+            },
+            "moodProgression": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "How mood should evolve during this beat"
+            }
+          }
+        },
+        "quickActions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/quickAction"
+          },
+          "description": "Contextual actions available to the player"
+        },
+        "objectives": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/objective"
+          },
+          "description": "Goals for the player in this beat"
+        },
+        "encounters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/encounter"
+          },
+          "description": "Random or conditional encounters"
+        },
+        "hiddenTriggers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/hiddenTrigger"
+          },
+          "description": "Invisible events that fire based on conditions"
+        },
+        "skillChecks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/skillCheck"
+          },
+          "description": "Stat-based challenges within this beat"
+        },
+        "exitConditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/exitCondition"
+          },
+          "description": "Ways to leave this beat and progress"
+        }
+      }
+    },
+    "quickAction": {
+      "type": "object",
+      "title": "Quick Action",
+      "description": "A contextual action button for players",
+      "required": ["id", "label"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]+$"
+        },
+        "label": {
+          "type": "string",
+          "description": "Text shown to player"
+        },
+        "description": {
+          "type": "string",
+          "description": "Tooltip or additional context"
+        },
+        "icon": {
+          "type": "string",
+          "description": "Emoji or icon identifier"
+        },
+        "visible": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether action is visible initially"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether action is clickable"
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/requirement"
+          },
+          "description": "Conditions needed to use this action"
+        },
+        "effects": {
+          "type": "object",
+          "description": "What happens when this action is taken",
+          "properties": {
+            "statChanges": {
+              "type": "object",
+              "patternProperties": {
+                "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+                  "type": "number"
+                }
+              }
+            },
+            "narrative": {
+              "type": "string",
+              "description": "Narrative outcome key"
+            },
+            "progressStory": {
+              "type": "boolean",
+              "description": "Whether this advances to next beat"
+            },
+            "revealsAction": {
+              "type": "string",
+              "description": "ID of action to make visible"
+            },
+            "unlocksPath": {
+              "type": "string",
+              "description": "Story path to unlock"
+            },
+            "addsItem": {
+              "type": "string",
+              "description": "Item ID to give to player"
+            },
+            "removesItem": {
+              "type": "string",
+              "description": "Item ID to remove from player"
+            },
+            "triggersEvent": {
+              "type": "string",
+              "description": "Event ID to trigger"
+            }
+          }
+        },
+        "cooldown": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Turns before action can be used again"
+        },
+        "oneTimeUse": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether action disappears after use"
+        }
+      }
+    },
+    "character": {
+      "type": "object",
+      "title": "Character",
+      "description": "An NPC or other character",
+      "required": ["id", "name"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]+$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Character's name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Physical/general description"
+        },
+        "personality": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Personality traits"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["ally", "enemy", "neutral", "vendor", "informant", "love_interest", "mentor", "rival", "victim", "suspect", "witness"],
+          "description": "Character's role in the story"
+        },
+        "stats": {
+          "type": "object",
+          "description": "Character's mechanical stats",
+          "patternProperties": {
+            "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+              "type": "number"
+            }
+          }
+        },
+        "relationships": {
+          "type": "object",
+          "description": "Relationships with other characters",
+          "patternProperties": {
+            "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+              "type": "string"
+            }
+          }
+        },
+        "knowledge": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "What this character knows about"
+        },
+        "secrets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Character's hidden information"
+        },
+        "dialogueTrees": {
+          "type": "object",
+          "description": "Conversation trees with this character",
+          "patternProperties": {
+            "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+              "$ref": "#/definitions/dialogueNode"
+            }
+          }
+        },
+        "companionAbilities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/companionAbility"
+          },
+          "description": "Special abilities if character joins player"
+        },
+        "schedule": {
+          "type": "object",
+          "description": "Character's schedule and behaviors",
+          "patternProperties": {
+            "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "title": "Item",
+      "description": "An item, tool, clue, or object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]+$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description shown to player"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["tool", "weapon", "armor", "consumable", "quest_item", "clue", "key", "document", "currency", "material"],
+          "description": "Item category"
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["readable", "usable", "equippable", "stackable", "tradeable", "valuable", "evidence", "magical", "technological", "perishable"]
+          },
+          "description": "Item properties and behaviors"
+        },
+        "effects": {
+          "type": "object",
+          "description": "What this item does when used",
+          "properties": {
+            "statModifiers": {
+              "type": "object",
+              "patternProperties": {
+                "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+                  "type": "number"
+                }
+              }
+            },
+            "narrative": {
+              "type": "string",
+              "description": "Narrative effect when used"
+            },
+            "revealsInformation": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "unlocksPath": {
+              "type": "string",
+              "description": "Story path unlocked by this item"
+            }
+          }
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/requirement"
+          },
+          "description": "Requirements to use this item"
+        },
+        "uses": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of times item can be used (-1 for unlimited)"
+        },
+        "combatProperties": {
+          "type": "object",
+          "description": "Combat-related properties",
+          "properties": {
+            "damage": {
+              "type": "string",
+              "pattern": "^\\d*d\\d+(\\+\\d+)?$",
+              "description": "Damage dice notation"
+            },
+            "defense": {
+              "type": "integer",
+              "description": "Defense bonus"
+            },
+            "range": {
+              "type": "string",
+              "enum": ["melee", "short", "medium", "long"]
+            },
+            "special": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Special combat properties"
+            }
+          }
+        },
+        "acquisitionMethod": {
+          "type": "string",
+          "description": "How this item is typically obtained"
+        }
+      }
+    },
+    "ending": {
+      "type": "object",
+      "title": "Game Ending",
+      "description": "A possible conclusion to the game",
+      "required": ["id", "title", "description"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]+$"
+        },
+        "title": {
+          "type": "string",
+          "description": "Ending title"
+        },
+        "description": {
+          "type": "string",
+          "description": "Brief description of this ending"
+        },
+        "category": {
+          "type": "string",
+          "enum": ["good", "neutral", "bad", "secret", "true"],
+          "description": "Type of ending"
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/requirement"
+          },
+          "description": "Conditions needed to achieve this ending"
+        },
+        "narrative": {
+          "type": "string",
+          "description": "Full ending text or narrative key"
+        },
+        "consequences": {
+          "type": "object",
+          "description": "Long-term consequences of this ending",
+          "properties": {
+            "worldState": {
+              "type": "string",
+              "description": "How the world is left"
+            },
+            "characterFates": {
+              "type": "object",
+              "patternProperties": {
+                "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+                  "type": "string"
+                }
+              }
+            },
+            "playerLegacy": {
+              "type": "string",
+              "description": "Player's lasting impact"
+            }
+          }
+        },
+        "rewards": {
+          "type": "object",
+          "description": "Rewards for achieving this ending",
+          "properties": {
+            "experience": {
+              "type": "integer"
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "achievements": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "unlocks": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Content unlocked for future playthroughs"
+            }
+          }
+        }
+      }
+    },
+    "objective": {
+      "type": "object",
+      "title": "Objective",
+      "description": "A goal for the player",
+      "required": ["id", "description"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]+$"
+        },
+        "description": {
+          "type": "string",
+          "description": "What the player needs to do"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["required", "optional", "hidden", "bonus"],
+          "default": "required",
+          "description": "How important this objective is"
+        },
+        "visible": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether objective is shown to player"
+        },
+        "completionHints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Hints about how to complete this objective"
+        },
+        "weight": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "default": 1,
+          "description": "Relative importance (affects experience/rewards)"
+        },
+        "timeLimit": {
+          "type": "integer",
+          "description": "Time limit in beats (optional)"
+        },
+        "rewards": {
+          "type": "object",
+          "description": "Rewards for completing this objective",
+          "properties": {
+            "experience": {
+              "type": "integer"
+            },
+            "statBonus": {
+              "type": "object",
+              "patternProperties": {
+                "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+                  "type": "number"
+                }
+              }
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "encounter": {
+      "type": "object",
+      "title": "Encounter",
+      "description": "A random or conditional event",
+      "required": ["id", "type"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]+$"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["random", "conditional", "triggered", "combat", "social", "puzzle"],
+          "description": "Type of encounter"
+        },
+        "chance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Probability of this encounter (for random type)"
+        },
+        "trigger": {
+          "$ref": "#/definitions/requirement",
+          "description": "Condition that triggers this encounter"
+        },
+        "description": {
+          "type": "string",
+          "description": "What happens in this encounter"
+        },
+        "quickActions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/quickAction"
+          }
+        },
+        "outcomes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "condition": {
+                "$ref": "#/definitions/requirement"
+              },
+              "narrative": {
+                "type": "string"
+              },
+              "effects": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "requirement": {
+      "type": "object",
+      "title": "Requirement",
+      "description": "A condition that must be met",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["stat", "item", "objective", "choice", "character", "beat", "flag"],
+          "description": "Type of requirement"
+        },
+        "condition": {
+          "type": "string",
+          "description": "The specific condition (e.g., stat name, item ID)"
+        },
+        "value": {
+          "anyOf": [
+            {"type": "string"},
+            {"type": "number"},
+            {"type": "boolean"}
+          ],
+          "description": "Required value or comparison"
+        },
+        "operator": {
+          "type": "string",
+          "enum": [">=", "<=", ">", "<", "==", "!="],
+          "default": ">=",
+          "description": "Comparison operator for numeric values"
+        }
+      }
+    },
+    "dialogueNode": {
+      "type": "object",
+      "title": "Dialogue Node",
+      "description": "A node in a conversation tree",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "What the character says"
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/requirement"
+          },
+          "description": "Requirements to access this dialogue"
+        },
+        "playerOptions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "Player's response option"
+              },
+              "requirements": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/requirement"
+                }
+              },
+              "effects": {
+                "type": "object",
+                "description": "Stat/relationship changes from this choice"
+              },
+              "leadsTo": {
+                "type": "string",
+                "description": "Next dialogue node ID"
+              }
+            }
+          }
+        },
+        "reveals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Information or paths revealed by this dialogue"
+        }
+      }
+    },
+    "companionAbility": {
+      "type": "object",
+      "title": "Companion Ability",
+      "description": "Special ability of a companion character",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["active", "passive", "combat", "social", "exploration"]
+        },
+        "cooldown": {
+          "type": "string",
+          "enum": ["per_beat", "per_act", "per_game", "none"]
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/requirement"
+          }
+        }
+      }
+    },
+    "hiddenTrigger": {
+      "type": "object",
+      "title": "Hidden Trigger",
+      "description": "An invisible event that fires based on conditions",
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/requirement",
+          "description": "When this trigger fires"
+        },
+        "effect": {
+          "type": "string",
+          "description": "What happens when triggered"
+        },
+        "description": {
+          "type": "string",
+          "description": "Internal description of this trigger"
+        },
+        "narrative": {
+          "type": "string",
+          "description": "Narrative description if visible to player"
+        },
+        "oneTime": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether trigger only fires once"
+        }
+      }
+    },
+    "skillCheck": {
+      "type": "object",
+      "title": "Skill Check",
+      "description": "A stat-based challenge",
+      "properties": {
+        "trigger": {
+          "type": "string",
+          "description": "What triggers this skill check"
+        },
+        "stat": {
+          "type": "string",
+          "description": "Which stat is being tested"
+        },
+        "difficulty": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30,
+          "description": "Difficulty number to beat"
+        },
+        "successText": {
+          "type": "string",
+          "description": "Narrative on success"
+        },
+        "failureText": {
+          "type": "string",
+          "description": "Narrative on failure"
+        },
+        "criticalSuccess": {
+          "type": "object",
+          "properties": {
+            "threshold": {
+              "type": "integer",
+              "description": "How much above difficulty counts as critical"
+            },
+            "text": {
+              "type": "string"
+            },
+            "effects": {
+              "type": "object"
+            }
+          }
+        },
+        "criticalFailure": {
+          "type": "object",
+          "properties": {
+            "threshold": {
+              "type": "integer",
+              "description": "How much below difficulty counts as critical failure"
+            },
+            "text": {
+              "type": "string"
+            },
+            "effects": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "exitCondition": {
+      "type": "object",
+      "title": "Exit Condition",
+      "description": "A way to leave the current beat",
+      "properties": {
+        "requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/requirement"
+          }
+        },
+        "nextBeat": {
+          "type": "string",
+          "description": "ID of the next beat to transition to"
+        },
+        "narrative": {
+          "type": "string",
+          "description": "Transition narrative"
+        },
+        "automatic": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether transition happens automatically when requirements are met"
+        }
+      }
+    },
+    "functionCall": {
+      "type": "object",
+      "title": "Function Call Definition",
+      "description": "A function the AI can call to modify game state",
+      "required": ["name", "description"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+          "description": "Function name"
+        },
+        "description": {
+          "type": "string",
+          "description": "What this function does"
+        },
+        "parameters": {
+          "type": "object",
+          "description": "Parameter schema for this function",
+          "patternProperties": {
+            "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+              "type": "string",
+              "description": "Parameter type and constraints"
+            }
+          }
+        },
+        "restrictions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "When this function should not be used"
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "situation": {
+                "type": "string"
+              },
+              "call": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "difficultySettings": {
+      "type": "object",
+      "title": "Difficulty Modifiers",
+      "description": "Stat adjustments for a difficulty level",
+      "properties": {
+        "statMultipliers": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+              "type": "number",
+              "minimum": 0.1,
+              "maximum": 10.0
+            }
+          }
+        },
+        "skillCheckBonus": {
+          "type": "integer",
+          "description": "Flat bonus/penalty to skill checks"
+        },
+        "resourceModifier": {
+          "type": "number",
+          "description": "Multiplier for resource gains/losses"
+        }
+      }
+    }
+  }
+}
