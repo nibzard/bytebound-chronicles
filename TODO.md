@@ -3,7 +3,7 @@
 ## 📊 Project Progress Overview
 
 **Phase 1: Foundation & Core Infrastructure** - ✅ **COMPLETED** (100%)
-- ✅ Project setup with TypeScript, tooling, and directory structure  
+- ✅ Project setup with TypeScript, tooling, and directory structure
 - ✅ Core game types and interfaces with comprehensive validation
 - ✅ Hybrid database foundation (LMDB + SQLite + unified service)
 - ✅ Complete unit test suite with 90%+ coverage
@@ -68,7 +68,7 @@
 
 ### Status Indicators
 - [ ] Not Started
-- [🔄] In Progress  
+- [🔄] In Progress
 - [⚠️] Blocked/Waiting
 - [✅] Complete
 - [❌] Cancelled/Skipped
@@ -302,12 +302,11 @@ stories/                   # Story files
 
 ### Story Content Creation
 
-- [ ] Create example story files
+- [ ] Move example story files to folder stories
   - Priority: Medium
   - Estimated Time: 12 hours
   - Dependencies: Story format definition
   - Testing: Story playability, narrative flow
-  - Files: `stories/tutorial-quest.json`, `stories/merchant-mystery.json`
 
 - [ ] Implement story authoring tools
   - Priority: Low
@@ -315,6 +314,13 @@ stories/                   # Story files
   - Dependencies: Story validation
   - Testing: Story creation workflow, validation feedback
   - Files: `src/tools/StoryAuthor.ts`, `tests/unit/tools/story-author.test.ts`
+
+- [ ] Enhance StoryValidationService into an Advanced Story Linter
+  - Priority: Medium
+  - Estimated Time: 8 hours
+  - Dependencies: StoryValidationService
+  - Testing: Detection of logical errors (unreachable beats, unused items, inconsistent state logic).
+  - Files: `src/services/StoryValidationService.ts`, `src/tools/StoryLinter.ts`
 
 ## Phase 4: API Development (Week 5)
 
@@ -488,6 +494,13 @@ stories/                   # Story files
   - Testing: Shortcut functionality, conflict resolution
   - Files: `src/client/hooks/useKeyboard.ts`
 
+- [ ] Conduct UI/UX review and polish pass
+  - Priority: Medium
+  - Estimated Time: 8 hours
+  - Dependencies: All UI components
+  - Testing: Responsiveness, clarity of state transitions, overall aesthetic.
+  - Files: `src/client/components/`, `src/client/themes/`
+
 ## Phase 6: Testing & Quality Assurance (Week 7)
 
 ### Comprehensive Test Coverage
@@ -526,7 +539,7 @@ stories/                   # Story files
   - Priority: Medium
   - Estimated Time: 6 hours
   - Dependencies: Complete API
-  - Testing: Concurrent users, system limits
+  - Testing: Concurrent users, system limits. Specifically test WebSocket connection scalability.
   - Files: `tests/load/`, stress test scenarios
 
 - [ ] Memory leak detection and fixing
@@ -558,6 +571,13 @@ stories/                   # Story files
   - Dependencies: Complete system
   - Testing: Real user scenarios, usability feedback
   - Files: UAT scenarios, feedback reports
+
+- [ ] Perform chaos engineering tests on AI model fallbacks
+  - Priority: Medium
+  - Estimated Time: 8 hours
+  - Dependencies: AI Orchestrator, Quality Assurance setup
+  - Testing: Simulate API outages, malformed responses, and high latency to ensure graceful degradation.
+  - Files: `tests/e2e/chaos.test.ts`
 
 ## Phase 7: Deployment & Documentation (Week 8)
 
@@ -629,6 +649,36 @@ stories/                   # Story files
   - Dependencies: All previous tasks
   - Testing: Launch checklist completion
   - Files: Launch readiness report
+
+## Phase 8: Refinements & Future Features (Post-Launch)
+
+### Core AI & Gameplay Enhancements
+
+- [ ] Design and implement a sophisticated context management strategy
+  - Priority: High
+  - Estimated Time: 3-4 Days
+  - Dependencies: AI Orchestrator
+  - Testing: Long-term coherence in extended gameplay sessions.
+  - Files: `src/ai/AIContextManager.ts`, `src/services/GameSessionService.ts`
+  - Note: To address the "goldfish brain" problem. This should include a combination of conversation summarization, and potentially embedding-based retrieval for long-term memory.
+
+- [ ] Establish a continuous improvement cycle for AI prompts
+  - Priority: Medium
+  - Estimated Time: Ongoing
+  - Dependencies: User feedback / playtesting data
+  - Testing: A/B testing of prompt variations.
+  - Files: `src/ai/prompts/templates/`
+  - Note: Regularly review and refine prompts (narrative, intent detection, empathy) to better manage the balance between player freedom and narrative structure.
+
+### Story Engine Evolution
+
+- [ ] Research and prototype a lightweight scripting layer for stories
+  - Priority: Medium
+  - Estimated Time: 4-5 Days
+  - Dependencies: Story Validation Service
+  - Testing: Prototype a story with complex, state-dependent logic.
+  - Files: `src/tools/StoryScripting.ts`, `examples/scripted-story.json`
+  - Note: To handle complex logic that is cumbersome in pure JSON (e.g., Lua, or a custom DSL). Addresses the "JSON Cage" critique.
 
 ---
 
