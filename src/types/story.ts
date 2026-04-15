@@ -275,7 +275,9 @@ export interface ValidationWarning {
 }
 
 // Re-import types from game.ts that are needed here
-import type { GameDifficulty, StoryBeat, Transition } from './game.js';
+import type { StoryBeat, Transition } from './game.js';
+export { GameDifficulty } from './game.js';
+import { GameDifficulty } from './game.js';
 
 // Utility types
 export type ComparisonOperator =

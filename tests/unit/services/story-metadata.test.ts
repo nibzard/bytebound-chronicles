@@ -65,10 +65,23 @@ describe('StoryMetadataService', () => {
     } catch {
       // Directory might be empty
     }
+    try {
+      await rm(join(testStoriesDir, 'individual-test.json'));
+    } catch {}
   });
 
   describe('Story Catalog Management', () => {
     it('should create empty catalog when no stories exist', async () => {
+      // Clean up any existing files
+      try {
+        const files = await import('fs').then(fs => fs.promises.readdir(testStoriesDir));
+        for (const file of files) {
+          if (file.endsWith('.json')) {
+            await rm(join(testStoriesDir, file));
+          }
+        }
+      } catch {}
+
       const catalog = await service.getStoryCatalog();
       
       expect(catalog).toBeDefined();

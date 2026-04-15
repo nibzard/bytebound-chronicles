@@ -196,9 +196,9 @@ export enum PlayerActionType {
 }
 
 export enum GameDifficulty {
-  BEGINNER = 'beginner',
-  INTERMEDIATE = 'intermediate',
-  ADVANCED = 'advanced',
+  EASY = 'easy',
+  NORMAL = 'normal',
+  HARD = 'hard',
   EXPERT = 'expert',
 }
 

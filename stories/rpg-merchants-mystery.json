@@ -556,7 +556,7 @@
       "name": "Millhaven Blade",
       "description": "A well-maintained sword with silver inlay, blessed by the village priest",
       "type": "weapon",
-      "properties": ["equippable", "blessed"],
+      "properties": ["equippable", "magical"],
       "requirements": [
         {
           "type": "stat",

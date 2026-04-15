@@ -85,7 +85,7 @@
       "description": "TechCon 2024 begins like any other conference day - or so you think.",
       "setting": {
         "location": "hotel_room_237",
-        "timeOfDay": "6:00 AM",
+        "timeOfDay": "morning",
         "atmosphere": "normal conference excitement"
       },
       "narrativeGuidance": {
@@ -228,7 +228,7 @@
       "description": "The same Tuesday morning, but with growing awareness of the impossible.",
       "setting": {
         "location": "hotel_room_237",
-        "timeOfDay": "6:00 AM",
+        "timeOfDay": "morning",
         "atmosphere": "unsettling familiarity"
       },
       "entryRequirements": [
@@ -333,7 +333,7 @@
       "description": "Multiple loops spent gathering clues and understanding the mystery.",
       "setting": {
         "location": "various_conference_locations",
-        "timeOfDay": "throughout_the_day",
+        "timeOfDay": "any",
         "atmosphere": "detective work with supernatural undertones"
       },
       "entryRequirements": [
@@ -501,7 +501,7 @@
       "description": "Armed with perfect knowledge, you make your final attempt to save Dr. Chen and escape the loop.",
       "setting": {
         "location": "conference_closing_mixer",
-        "timeOfDay": "11:30 PM",
+        "timeOfDay": "night",
         "atmosphere": "climactic tension as fate approaches"
       },
       "entryRequirements": [
@@ -774,7 +774,7 @@
       "name": "Time Loop Documentation",
       "description": "Your detailed notes that somehow persist between loops",
       "type": "quest_item",
-      "properties": ["readable", "persistent"],
+      "properties": ["readable", "magical"],
       "effects": {
         "statModifiers": {
           "loop_knowledge": 10,
@@ -800,8 +800,8 @@
       "id": "poison_vial",
       "name": "Polonium-210 Capsule",
       "description": "Sophisticated radioactive poison disguised as a vitamin supplement",
-      "type": "evidence",
-      "properties": ["evidence", "dangerous"],
+      "type": "clue",
+      "properties": ["evidence", "perishable"],
       "effects": {
         "revealsInformation": ["murder_method", "killer_access", "premeditation"]
       },
@@ -811,7 +811,7 @@
       "id": "falsified_papers",
       "name": "Webb's Fraudulent Research",
       "description": "Academic papers with fabricated data that Sarah's work would expose",
-      "type": "evidence",
+      "type": "clue",
       "properties": ["evidence", "readable"],
       "effects": {
         "revealsInformation": ["webb_motive", "academic_fraud", "career_desperation"],
@@ -824,7 +824,7 @@
       "id": "security_footage",
       "name": "Conference Security Recordings",
       "description": "Digital evidence showing movements during critical timeframes",
-      "type": "evidence",
+      "type": "clue",
       "properties": ["evidence", "technological"],
       "effects": {
         "revealsInformation": ["alibis", "timeline_verification", "suspect_movements"]
@@ -836,7 +836,7 @@
       "name": "Prototype Quantum Stabilizer",
       "description": "Sarah's experimental device that might be connected to the time loop",
       "type": "quest_item",
-      "properties": ["technological", "mysterious"],
+      "properties": ["technological", "magical"],
       "effects": {
         "unlocksPath": "loop_breaking_attempt",
         "revealsInformation": ["temporal_connection"]
@@ -923,7 +923,7 @@
       "id": "temporal_freedom",
       "title": "Breaking the Chains of Time",
       "description": "You destroy the quantum loop at great personal cost",
-      "category": "bittersweet",
+      "category": "neutral",
       "requirements": [
         {
           "type": "choice",
@@ -946,7 +946,7 @@
       "id": "eternal_guardian",
       "title": "Forever Tuesday",
       "description": "You accept the loop as your eternal responsibility",
-      "category": "tragic",
+      "category": "bad",
       "requirements": [
         {
           "type": "stat",

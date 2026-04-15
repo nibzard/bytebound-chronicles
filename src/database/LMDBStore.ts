@@ -64,6 +64,7 @@ export class LMDBStore {
    */
   async storeInteraction(interaction: PlayerInteraction): Promise<void> {
     const key = `${interaction.gameId}:${interaction.timestamp}`;
+    console.log(`Storing interaction with key: ${key}`);
     await this.interactions.put(key, interaction);
   }
 
@@ -157,11 +158,7 @@ export class LMDBStore {
    */
   async createSession(
     sessionId: string,
-    data: {
-      playerId: string;
-      gameId: string;
-      startedAt: Date;
-    }
+    data: any
   ): Promise<void> {
     await this.sessions.put(sessionId, {
       ...data,
@@ -201,6 +198,10 @@ export class LMDBStore {
     }
 
     return sessions;
+  }
+
+  async getSession(sessionId: string): Promise<any> {
+    return (await this.sessions.get(sessionId)) ?? null;
   }
 
   /**
@@ -344,6 +345,14 @@ export class LMDBStore {
     } catch (error) {
       return false;
     }
+  }
+
+  async reset(): Promise<void> {
+    await this.interactions.clearAsync();
+    await this.responses.clearAsync();
+    await this.gameStates.clearAsync();
+    await this.sessions.clearAsync();
+    await this.aiMetrics.clearAsync();
   }
 }
 

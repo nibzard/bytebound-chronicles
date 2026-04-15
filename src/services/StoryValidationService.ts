@@ -93,7 +93,6 @@ export class StoryValidationService {
    */
   async validateStoryContent(story: ByteboundGame): Promise<ValidationResult> {
     const issues: ValidationIssue[] = [];
-    const startTime = Date.now();
 
     // Run all validation rules
     const allRules = [...this.builtInRules, ...this.config.customRules];
@@ -362,7 +361,10 @@ export class StoryValidationService {
     const beatIds = new Set(beats.map(b => b.id));
     
     // Start with the first beat (assumed to be starting beat)
-    const startingBeat = beats.sort((a, b) => a.act - b.act)[0];
+    const startingBeat = beats.sort((a, b) => (a.act ?? 0) - (b.act ?? 0))[0];
+    if (!startingBeat) {
+      return issues;
+    }
     reachableBeats.add(startingBeat.id);
 
     // Find all reachable beats through exit conditions
@@ -373,7 +375,7 @@ export class StoryValidationService {
         if (!reachableBeats.has(beat.id)) continue;
         
         for (const exitCondition of beat.exitConditions || []) {
-          if (beatIds.has(exitCondition.nextBeat) && !reachableBeats.has(exitCondition.nextBeat)) {
+          if (exitCondition.nextBeat && beatIds.has(exitCondition.nextBeat) && !reachableBeats.has(exitCondition.nextBeat)) {
             reachableBeats.add(exitCondition.nextBeat);
             changed = true;
           }
@@ -420,7 +422,6 @@ export class StoryValidationService {
   private checkReferenceIntegrity(story: ByteboundGame): ValidationIssue[] {
     const issues: ValidationIssue[] = [];
     
-    const characterIds = new Set((story.characters || []).map(c => c.id));
     const itemIds = new Set((story.items || []).map(i => i.id));
     const beatIds = new Set(story.beats.map(b => b.id));
 
@@ -443,7 +444,7 @@ export class StoryValidationService {
 
       // Check exit conditions for beat references
       for (const exitCondition of beat.exitConditions || []) {
-        if (!beatIds.has(exitCondition.nextBeat)) {
+        if (exitCondition.nextBeat && !beatIds.has(exitCondition.nextBeat)) {
           issues.push({
             type: 'error',
             category: 'structure',
@@ -716,7 +717,7 @@ export class StoryValidationService {
     complexityScore += itemCount * 1;
     complexityScore += endingCount * 4;
     
-    const avgChoicesPerBeat = story.beats.reduce((sum, beat) => sum + (beat.quickActions?.length || 0), 0) / beatCount;
+    const avgChoicesPerBeat = beatCount > 0 ? story.beats.reduce((sum, beat) => sum + (beat.quickActions?.length || 0), 0) / beatCount : 0;
     complexityScore += avgChoicesPerBeat * 5;
 
     let complexity: 'simple' | 'moderate' | 'complex' | 'very_complex';

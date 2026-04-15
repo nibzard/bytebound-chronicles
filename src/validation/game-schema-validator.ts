@@ -5,6 +5,8 @@
 
 import { z } from 'zod';
 import type { ByteboundGame } from './game-schema-types';
+export type { ByteboundGame } from './game-schema-types';
+export type { StoryBeat, Requirement, Character, Item, Ending } from './game-schema-types';
 
 // Base validation schemas
 const gameStyleSchema = z.enum([
@@ -29,7 +31,7 @@ const timeOfDaySchema = z.enum([
 ]);
 
 const requirementTypeSchema = z.enum([
-  "stat", "item", "objective", "choice", "character", "beat", "flag"
+  "stat", "item", "objective", "choice", "character", "beat", "flag", "relationship"
 ]);
 
 const comparisonOperatorSchema = z.enum([">=", "<=", ">", "<", "==", "!="]);
@@ -263,11 +265,11 @@ const byteboundGameSchema = z.object({
     id: z.string().regex(/^[a-z0-9-]+$/, "Game ID must be kebab-case alphanumeric"),
     title: z.string().min(1).max(100, "Title must be 1-100 characters"),
     description: z.string().min(1).max(500, "Description must be 1-500 characters"),
-    author: z.string().optional(),
+    author: z.string(),
     version: z.string().regex(/^\d+\.\d+\.\d+$/, "Version must follow semantic versioning"),
     gameStyle: gameStyleSchema,
     difficulty: difficultySchema.optional().default("normal"),
-    estimatedLength: z.number().min(15).max(1200).optional(),
+    estimatedLength: z.number().min(15).max(1200),
     tags: z.array(contentTagSchema).max(8).optional(),
     contentWarnings: z.array(z.string()).optional(),
     playerInputMode: z.object({
@@ -375,32 +377,30 @@ export function validateGameIds(game: ByteboundGame): string[] {
   const seenIds = new Set<string>();
   
   // Check for duplicate beat IDs
-  game.beats.forEach((beat, index) => {
+  game.beats.forEach((beat) => {
     if (seenIds.has(beat.id)) {
-      errors.push(`Duplicate beat ID: ${beat.id} (at index ${index})`);
+      errors.push(`Duplicate beat ID: ${beat.id}`);
     }
     seenIds.add(beat.id);
   });
   
   // Check for duplicate character IDs
   if (game.characters) {
-    const characterIds = new Set<string>();
-    game.characters.forEach((character, index) => {
-      if (characterIds.has(character.id)) {
-        errors.push(`Duplicate character ID: ${character.id} (at index ${index})`);
+    game.characters.forEach((character) => {
+      if (seenIds.has(character.id)) {
+        errors.push(`Duplicate character ID: ${character.id}`);
       }
-      characterIds.add(character.id);
+      seenIds.add(character.id);
     });
   }
   
   // Check for duplicate item IDs
   if (game.items) {
-    const itemIds = new Set<string>();
-    game.items.forEach((item, index) => {
-      if (itemIds.has(item.id)) {
-        errors.push(`Duplicate item ID: ${item.id} (at index ${index})`);
+    game.items.forEach((item) => {
+      if (seenIds.has(item.id)) {
+        errors.push(`Duplicate item ID: ${item.id}`);
       }
-      itemIds.add(item.id);
+      seenIds.add(item.id);
     });
   }
   
@@ -411,11 +411,10 @@ export function validateGameReferences(game: ByteboundGame): string[] {
   const errors: string[] = [];
   
   const beatIds = new Set(game.beats.map(b => b.id));
-  const characterIds = new Set(game.characters?.map(c => c.id) || []);
   const itemIds = new Set(game.items?.map(i => i.id) || []);
   
   // Check beat exit conditions reference valid beats
-  game.beats.forEach((beat, beatIndex) => {
+  game.beats.forEach((beat) => {
     beat.exitConditions?.forEach((exit, exitIndex) => {
       if (exit.nextBeat && !beatIds.has(exit.nextBeat)) {
         errors.push(`Beat ${beat.id} exit condition ${exitIndex} references non-existent beat: ${exit.nextBeat}`);
@@ -423,7 +422,7 @@ export function validateGameReferences(game: ByteboundGame): string[] {
     });
     
     // Check quick actions reference valid items
-    beat.quickActions?.forEach((action, actionIndex) => {
+    beat.quickActions?.forEach((action) => {
       if (action.effects?.addsItem && !itemIds.has(action.effects.addsItem)) {
         errors.push(`Beat ${beat.id} action ${action.id} references non-existent item: ${action.effects.addsItem}`);
       }

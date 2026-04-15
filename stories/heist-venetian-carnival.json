@@ -8,7 +8,7 @@
     "gameStyle": "heist-crime",
     "difficulty": "hard",
     "estimatedLength": 180,
-    "tags": ["crime", "heist", "strategy", "thriller", "planning"],
+    "tags": ["crime", "strategy", "thriller"],
     "contentWarnings": ["criminal activity", "mild violence", "moral ambiguity"],
     "playerInputMode": {
       "primary": "hybrid",

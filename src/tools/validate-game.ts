@@ -24,6 +24,7 @@ function parseArgs(args: string[]): CliOptions {
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
+    if (!arg) continue;
     
     if (arg === '--verbose' || arg === '-v') {
       options.verbose = true;
@@ -123,7 +124,7 @@ function formatJsonOutput(result: any): string {
   return JSON.stringify(result, null, 2);
 }
 
-async function main(): void {
+async function main(): Promise<void> {
   const args = process.argv.slice(2);
   
   if (args.length === 0) {
@@ -182,7 +183,7 @@ async function main(): void {
 }
 
 // Additional validation functions for specific use cases
-export function validateGameDirectory(directory: string): Promise<{
+export async function validateGameDirectory(): Promise<{
   totalFiles: number;
   validFiles: number;
   invalidFiles: number;
@@ -198,7 +199,7 @@ export function validateGameDirectory(directory: string): Promise<{
   });
 }
 
-export function generateValidationReport(results: any[]): string {
+export function generateValidationReport(): string {
   // Implementation for detailed reporting would go here
   // This is a placeholder for future enhancement
   return '';
@@ -206,7 +207,7 @@ export function generateValidationReport(results: any[]): string {
 
 // Run the CLI if this file is executed directly
 if (require.main === module) {
-  main().catch((error) => {
+  main().catch((error: any) => {
     console.error('Fatal error:', error);
     process.exit(1);
   });

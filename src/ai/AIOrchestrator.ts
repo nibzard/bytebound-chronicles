@@ -15,13 +15,12 @@ import {
   GameContext, 
   FrustrationAnalysis 
 } from '@/types/ai.js';
-import { HybridDatabase } from '@/database/HybridDatabase.js';
 
 export class AIOrchestrator {
   private promptBuilder: PromptBuilder;
   private frustrationDetector: FrustrationDetector;
 
-  constructor(private database: HybridDatabase) {
+  constructor() {
     this.promptBuilder = new PromptBuilder();
     this.frustrationDetector = new FrustrationDetector();
   }
@@ -54,7 +53,7 @@ export class AIOrchestrator {
       const parsedResponse = this.parseResponse(modelResponse.content);
       
       // 7. Record interaction and metrics
-      await this.recordInteraction(gameId, userInput, parsedResponse, modelResponse.metadata, frustrationAnalysis);
+      await this.recordInteraction(userInput, parsedResponse, modelResponse.metadata, frustrationAnalysis);
       
       return parsedResponse;
       
@@ -160,7 +159,7 @@ export class AIOrchestrator {
   /**
    * Fetch comprehensive game context for AI processing
    */
-  private async fetchGameContext(gameId: string): Promise<GameContext> {
+  private async fetchGameContext(_gameId: string): Promise<GameContext> {
     // This would fetch from the database - simplified for now
     // In a real implementation, this would pull from HybridDatabase
     throw new Error('fetchGameContext not implemented - requires database integration');
@@ -170,7 +169,6 @@ export class AIOrchestrator {
    * Record player interaction and AI response metrics
    */
   private async recordInteraction(
-    _gameId: string,
     userInput: string,
     response: AIActionResponse,
     modelMetadata: unknown,
@@ -180,7 +178,6 @@ export class AIOrchestrator {
     // This would use the HybridDatabase to store interaction data
     // eslint-disable-next-line no-console
     console.log('Recording interaction:', {
-      gameId: _gameId,
       userInput: `${userInput.substring(0, 50)}...`,
       confidence: response.confidence,
       frustrationScore: frustrationAnalysis.score,
@@ -192,7 +189,7 @@ export class AIOrchestrator {
   /**
    * Get orchestrator status and metrics
    */
-  public async getStatus(_gameId?: string): Promise<{
+  public async getStatus(): Promise<{
     modelsAvailable: Record<AIModelId, boolean>;
     totalInteractions: number;
     averageResponseTime: number;

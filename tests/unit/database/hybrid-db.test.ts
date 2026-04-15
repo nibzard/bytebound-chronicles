@@ -47,14 +47,14 @@ describe('HybridDatabase', () => {
   });
 
   afterEach(async () => {
-    if (db) {
-      await db.close();
-    }
-    try {
-      rmSync(testDir, { recursive: true, force: true });
-    } catch (error) {
-      console.warn('Failed to cleanup test directory:', error);
-    }
+    // if (db) {
+    //   await db.close();
+    // }
+    // try {
+    //   rmSync(testDir, { recursive: true, force: true });
+    // } catch (error) {
+    //   console.warn('Failed to cleanup test directory:', error);
+    // }
   });
 
   describe('Initialization', () => {

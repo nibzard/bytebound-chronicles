@@ -309,6 +309,31 @@ export class SQLiteStore {
     stmt.run(...values);
   }
 
+  async deletePlayerProfile(playerId: string): Promise<boolean> {
+    // Start a transaction to ensure data consistency
+    const transaction = this.db.transaction(() => {
+      // First, delete related game saves
+      const deleteGameSaves = this.db.prepare('DELETE FROM game_saves WHERE player_id = ?');
+      deleteGameSaves.run(playerId);
+
+      // Delete related story progress
+      const deleteStoryProgress = this.db.prepare('DELETE FROM story_progress WHERE player_id = ?');
+      deleteStoryProgress.run(playerId);
+
+      // Delete analytics records for this player
+      const deleteAnalytics = this.db.prepare('DELETE FROM analytics_events WHERE player_id = ?');
+      deleteAnalytics.run(playerId);
+
+      // Finally, delete the player profile
+      const deletePlayer = this.db.prepare('DELETE FROM player_profiles WHERE id = ?');
+      const result = deletePlayer.run(playerId);
+      
+      return result.changes > 0;
+    });
+
+    return transaction();
+  }
+
   /**
    * Game Save Management
    */
@@ -427,6 +452,27 @@ export class SQLiteStore {
       lastPlayed: new Date(row.last_played),
       totalPlayTime: row.total_play_time,
     };
+  }
+
+  async getStoryProgressSince(timestamp: Date): Promise<StoryProgress[]> {
+    const stmt = this.db.prepare(`
+      SELECT * FROM story_progress
+      WHERE last_played > ?
+    `);
+
+    const rows = stmt.all(timestamp.toISOString()) as any[];
+    return rows.map(row => ({
+      storyId: row.story_id,
+      playerId: row.player_id,
+      currentBeatId: row.current_beat_id,
+      completedBeats: JSON.parse(row.completed_beats),
+      visitedLocations: JSON.parse(row.visited_locations),
+      metCharacters: JSON.parse(row.met_characters),
+      discoveredSecrets: JSON.parse(row.discovered_secrets),
+      endingImplications: JSON.parse(row.ending_implications),
+      lastPlayed: new Date(row.last_played),
+      totalPlayTime: row.total_play_time,
+    }));
   }
 
   /**
@@ -625,6 +671,17 @@ export class SQLiteStore {
    */
   transaction<T>(fn: () => T): T {
     return this.db.transaction(fn)();
+  }
+
+  async reset(): Promise<void> {
+    this.db.exec('DROP TABLE IF EXISTS player_profiles');
+    this.db.exec('DROP TABLE IF EXISTS game_saves');
+    this.db.exec('DROP TABLE IF EXISTS story_progress');
+    this.db.exec('DROP TABLE IF EXISTS story_metadata');
+    this.db.exec('DROP TABLE IF EXISTS game_analytics');
+    this.db.exec('DROP TABLE IF EXISTS story_validations');
+    this.db.exec('DROP TABLE IF EXISTS story_catalog');
+    this.createTables();
   }
 }
 

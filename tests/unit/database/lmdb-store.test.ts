@@ -30,14 +30,15 @@ describe('LMDBStore', () => {
   });
 
   afterEach(async () => {
-    if (store) {
-      await store.close();
-    }
-    try {
-      rmSync(testDir, { recursive: true, force: true });
-    } catch (error) {
-      console.warn('Failed to cleanup test directory:', error);
-    }
+    // if (store) {
+    //   await store.close();
+    // }
+    // await new Promise(resolve => setTimeout(resolve, 100));
+    // try {
+    //   rmSync(testDir, { recursive: true, force: true });
+    // } catch (error) {
+    //   console.warn('Failed to cleanup test directory:', error);
+    // }
   });
 
   describe('Player Interactions', () => {

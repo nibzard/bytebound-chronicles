@@ -480,3 +480,11 @@ export interface AIModelUsage {
   successful: boolean;
   escalated: boolean;
 }
+
+export type AIThinkingStatus = 
+  | 'idle'
+  | 'processing_action'
+  | 'generating_response'
+  | 'analyzing_context'
+  | 'selecting_model'
+  | 'thinking';

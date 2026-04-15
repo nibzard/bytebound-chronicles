@@ -7,7 +7,7 @@
  * Only reveals content that the player should have access to based on their progress
  */
 
-import { ByteboundGame } from '../validation/game-schema-validator.js';
+import { ByteboundGame, StoryBeat, Requirement, Character, Item, Ending } from '../validation/game-schema-validator.js';
 import { StoryMetadataService } from './StoryMetadataService.js';
 import { HybridDatabase } from '../database/HybridDatabase.js';
 import { StoryProgress } from '../types/game.js';
@@ -273,7 +273,7 @@ export class ProgressiveStoryLoader {
     let progressState = this.progressCache.get(cacheKey);
 
     // Get the full story (from cache or load) - we need this first to restore relationships
-    let fullStory = this.fullStoryCache.get(storyId);
+    let fullStory: ByteboundGame | undefined | null = this.fullStoryCache.get(storyId);
     if (!fullStory) {
       fullStory = await this.config.metadataService.loadFullStory(storyId);
       if (!fullStory) {
@@ -290,9 +290,6 @@ export class ProgressiveStoryLoader {
       }
 
       progressState = this.convertStoryProgressToState(storyProgress);
-      
-      // Restore initial relationship values from the full story
-      progressState.relationshipsState = { ...fullStory.hiddenMechanics.relationships };
       
       this.progressCache.set(cacheKey, progressState);
     }
@@ -392,7 +389,7 @@ export class ProgressiveStoryLoader {
       if (!storyProgress) {
         return [];
       }
-      return JSON.parse(storyProgress.completedBeats || '[]');
+      return storyProgress.completedBeats || [];
     }
 
     return progressState.accessibleBeats;
@@ -422,7 +419,8 @@ export class ProgressiveStoryLoader {
       return {};
     }
 
-    return JSON.parse(storyProgress.endingImplications || '{}');
+    const implications = storyProgress.endingImplications as any;
+    return implications.stats || {};
   }
 
   /**
@@ -447,7 +445,7 @@ export class ProgressiveStoryLoader {
 
   private findStartingBeat(story: ByteboundGame): string {
     // Find the beat with the lowest act number
-    const sortedBeats = story.beats.sort((a, b) => a.act - b.act);
+    const sortedBeats = story.beats.sort((a: StoryBeat, b: StoryBeat) => (a.act ?? 1) - (b.act ?? 1));
     return sortedBeats[0]?.id || 'start';
   }
 
@@ -460,7 +458,7 @@ export class ProgressiveStoryLoader {
 
       // Check if beat requirements are met
       if (beat.entryRequirements) {
-        const canAccess = beat.entryRequirements.every(req => 
+        const canAccess = beat.entryRequirements.every((req: Requirement) => 
           this.evaluateRequirement(req, progressState)
         );
         
@@ -473,32 +471,27 @@ export class ProgressiveStoryLoader {
     return accessible;
   }
 
-  private evaluateRequirement(requirement: any, progressState: ProgressiveStoryState): boolean {
+  private evaluateRequirement(requirement: Requirement, progressState: ProgressiveStoryState): boolean {
     switch (requirement.type) {
       case 'stat':
-        const statValue = progressState.hiddenMechanicsState[requirement.condition] || 0;
-        return this.compareValues(statValue, requirement.value, requirement.operator || '>=');
+        const statValue = progressState.hiddenMechanicsState[requirement.condition!] || 0;
+        return this.compareValues(statValue, requirement.value as number, requirement.operator || '>=');
       
       case 'relationship':
-        const relValue = progressState.relationshipsState[requirement.condition] || 0;
-        const result = this.compareValues(relValue, requirement.value, requirement.operator || '>=');
-        if (requirement.condition === 'companion') {
-          console.log(`[DEBUG] relationship:companion - relValue: ${relValue}, requirement.value: ${requirement.value}, operator: ${requirement.operator || '>='}, result: ${result}`);
-          console.log(`[DEBUG] relationshipsState:`, progressState.relationshipsState);
-        }
-        return result;
+        const relValue = progressState.relationshipsState[requirement.condition!] || 0;
+        return this.compareValues(relValue, requirement.value as number, requirement.operator || '>=');
       
       case 'flag':
-        return progressState.gameFlags[requirement.condition] === requirement.value;
+        return progressState.gameFlags[requirement.condition!] === requirement.value;
       
       case 'beat':
-        return progressState.accessibleBeats.includes(requirement.condition);
+        return progressState.accessibleBeats.includes(requirement.condition!);
       
       case 'item':
-        return progressState.discoveredItems.includes(requirement.condition);
+        return progressState.discoveredItems.includes(requirement.condition!);
       
       case 'character':
-        return progressState.revealedCharacters.includes(requirement.condition);
+        return progressState.revealedCharacters.includes(requirement.condition!);
       
       default:
         return false;
@@ -519,7 +512,7 @@ export class ProgressiveStoryLoader {
 
   private buildProgressiveContent(story: ByteboundGame, progressState: ProgressiveStoryState): ProgressiveStoryContent {
     // Find current beat - fallback to first beat if current one is invalid
-    let currentBeat = story.beats.find(b => b.id === progressState.currentBeatId);
+    let currentBeat = story.beats.find((b: StoryBeat) => b.id === progressState.currentBeatId);
     if (!currentBeat) {
       // Fallback to first beat if current beat is invalid (corrupted data handling)
       currentBeat = story.beats[0];
@@ -532,33 +525,33 @@ export class ProgressiveStoryLoader {
 
     // Build accessible beats content (limited to prevent spoilers)
     const accessibleBeats = story.beats
-      .filter(beat => progressState.accessibleBeats.includes(beat.id))
-      .map(beat => this.buildBeatContent(beat, progressState));
+      .filter((beat: StoryBeat) => progressState.accessibleBeats.includes(beat.id))
+      .map((beat: StoryBeat) => this.buildBeatContent(beat, progressState));
 
     // Build revealed characters
     const revealedCharacters = story.characters
-      ?.filter(char => progressState.revealedCharacters.includes(char.id))
-      .map(char => this.buildCharacterContent(char, progressState)) || [];
+      ?.filter((char: Character) => progressState.revealedCharacters.includes(char.id))
+      .map((char: Character) => this.buildCharacterContent(char)) || [];
 
     // Build discovered items
     const discoveredItems = story.items
-      ?.filter(item => progressState.discoveredItems.includes(item.id))
-      .map(item => this.buildItemContent(item)) || [];
+      ?.filter((item: Item) => progressState.discoveredItems.includes(item.id))
+      .map((item: Item) => this.buildItemContent(item)) || [];
 
     // Build available endings (show which ones are possible)
     const availableEndings = story.endings
-      ?.map(ending => this.buildEndingContent(ending, progressState)) || [];
+      ?.map((ending: Ending) => this.buildEndingContent(ending, progressState)) || [];
 
     return {
       metadata: {
         id: story.metadata.id,
         title: story.metadata.title,
         description: story.metadata.description,
-        author: story.metadata.author,
+        author: story.metadata.author!,
         gameStyle: story.metadata.gameStyle,
-        difficulty: story.metadata.difficulty,
-        estimatedLength: story.metadata.estimatedLength,
-        tags: story.metadata.tags
+        difficulty: story.metadata.difficulty!,
+        estimatedLength: story.metadata.estimatedLength!,
+        tags: story.metadata.tags!
       },
       currentBeat: this.buildBeatContent(currentBeat, progressState),
       accessibleBeats,
@@ -566,12 +559,12 @@ export class ProgressiveStoryLoader {
       discoveredItems,
       availableEndings,
       progressState: { ...progressState },
-      aiGuidance: story.aiGuidance,
-      functionCalls: story.functionCalls
+      aiGuidance: story.aiGuidance as any,
+      functionCalls: story.functionCalls as any
     };
   }
 
-  private buildBeatContent(beat: any, progressState: ProgressiveStoryState): StoryBeatContent {
+  private buildBeatContent(beat: StoryBeat, progressState: ProgressiveStoryState): StoryBeatContent {
     // Filter quick actions based on requirements and visibility
     const visibleActions = beat.quickActions?.filter((action: any) => {
       // If action has requirements, check them regardless of initial visibility
@@ -591,109 +584,90 @@ export class ProgressiveStoryLoader {
     }) || [];
 
     return {
-      id: beat.id,
-      act: beat.act,
-      title: beat.title,
-      description: beat.description,
-      setting: beat.setting,
-      entryRequirements: beat.entryRequirements,
-      narrativeGuidance: beat.narrativeGuidance,
+      ...beat,
       quickActions: visibleActions,
       objectives: visibleObjectives,
-      hiddenTriggers: beat.hiddenTriggers,
-      exitConditions: beat.exitConditions
-    };
+    } as StoryBeatContent;
   }
 
-  private buildCharacterContent(character: any, progressState: ProgressiveStoryState): RevealedCharacter {
+  private buildCharacterContent(character: Character): RevealedCharacter {
     return {
-      id: character.id,
-      name: character.name,
-      description: character.description,
-      personality: character.personality,
-      role: character.role,
-      stats: character.stats,
-      knowledge: character.knowledge,
-      secrets: character.secrets,
-      relationships: character.relationships,
-      companionAbilities: character.companionAbilities,
-      dialogueTrees: character.dialogueTrees
-    };
+      ...character,
+    } as RevealedCharacter;
   }
 
-  private buildItemContent(item: any): RevealedItem {
+  private buildItemContent(item: Item): RevealedItem {
     return {
-      id: item.id,
-      name: item.name,
-      description: item.description,
-      type: item.type,
-      properties: item.properties,
-      effects: item.effects,
-      requirements: item.requirements,
-      acquisitionMethod: item.acquisitionMethod
-    };
+      ...item,
+    } as RevealedItem;
   }
 
-  private buildEndingContent(ending: any, progressState: ProgressiveStoryState): AvailableEnding {
+  private buildEndingContent(ending: Ending, progressState: ProgressiveStoryState): AvailableEnding {
     const missingRequirements: string[] = [];
-    const canBeReached = ending.requirements.every((req: any) => {
+    let canBeReached = true;
+    
+    ending.requirements?.forEach((req: Requirement) => {
       const met = this.evaluateRequirement(req, progressState);
       if (!met) {
-        missingRequirements.push(`${req.type}:${req.condition}`);
+        missingRequirements.push(`${req.type!}:${req.condition!}`);
+        canBeReached = false;
       }
-      return met;
     });
 
     return {
-      id: ending.id,
-      title: ending.title,
-      description: ending.description,
-      category: ending.category,
-      requirements: ending.requirements,
+      ...ending,
       canBeReached,
-      missingRequirements: missingRequirements.length > 0 ? missingRequirements : undefined
-    };
+      ...(!canBeReached ? { missingRequirements } : {}),
+    } as AvailableEnding;
   }
 
   private async saveProgressState(progressState: ProgressiveStoryState): Promise<void> {
+    const implications = {
+      stats: progressState.hiddenMechanicsState,
+      relationships: progressState.relationshipsState,
+      flags: progressState.gameFlags,
+    };
+
     const storyProgress: StoryProgress = {
-      id: `${progressState.storyId}_${progressState.playerId}`,
       storyId: progressState.storyId,
       playerId: progressState.playerId,
       currentBeatId: progressState.currentBeatId,
-      completedBeats: JSON.stringify(progressState.accessibleBeats),
-      visitedLocations: JSON.stringify([]),
-      metCharacters: JSON.stringify(progressState.revealedCharacters),
-      discoveredSecrets: JSON.stringify(progressState.discoveredItems),
-      endingImplications: JSON.stringify(progressState.hiddenMechanicsState),
+      completedBeats: progressState.accessibleBeats,
+      visitedLocations: [], // This seems unused, should clarify
+      metCharacters: progressState.revealedCharacters,
+      discoveredSecrets: progressState.discoveredItems,
+      endingImplications: implications as any, // Cast to any to match expected type
       lastPlayed: progressState.lastUpdated,
-      totalPlayTime: 0
+      totalPlayTime: 0, // Placeholder
     };
 
     await this.config.database.updateStoryProgress(storyProgress);
   }
 
   private convertStoryProgressToState(storyProgress: StoryProgress): ProgressiveStoryState {
-    const safeJsonParse = (jsonString: string, fallback: any) => {
+    const safeJsonParse = (jsonString: string | any, fallback: any) => {
+      if (typeof jsonString !== 'string') return jsonString ?? fallback;
       try {
         return JSON.parse(jsonString);
       } catch {
         return fallback;
       }
     };
+    
+    const implications = safeJsonParse(storyProgress.endingImplications, {});
 
     return {
       storyId: storyProgress.storyId,
       playerId: storyProgress.playerId,
       currentBeatId: storyProgress.currentBeatId,
-      accessibleBeats: safeJsonParse(storyProgress.completedBeats || '[]', []),
-      revealedCharacters: safeJsonParse(storyProgress.metCharacters || '[]', []),
-      discoveredItems: safeJsonParse(storyProgress.discoveredSecrets || '[]', []),
+      accessibleBeats: safeJsonParse(storyProgress.completedBeats, []),
+      revealedCharacters: safeJsonParse(storyProgress.metCharacters, []),
+      discoveredItems: safeJsonParse(storyProgress.discoveredSecrets, []),
       unlockedEndings: [],
-      hiddenMechanicsState: safeJsonParse(storyProgress.endingImplications || '{}', {}),
-      relationshipsState: {},
-      gameFlags: {},
-      lastUpdated: storyProgress.lastPlayed
+      hiddenMechanicsState: implications.stats || {},
+      relationshipsState: implications.relationships || {},
+      gameFlags: implications.flags || {},
+      lastUpdated: storyProgress.lastPlayed,
     };
   }
 

@@ -103,28 +103,70 @@ export class GameSessionService {
    * Create a new game session
    */
   async createSession(playerId: string, storyId: string, settings?: Partial<GameSession['settings']>): Promise<GameSession> {
+    console.log(`[GameSessionService] createSession called with playerId: ${playerId}, storyId: ${storyId}`);
     // Validate story is available
     const storyMetadata = await this.config.metadataService.getStoryMetadata(storyId);
+    console.log('[GameSessionService] storyMetadata:', storyMetadata);
     if (!storyMetadata || !storyMetadata.available) {
+      console.error(`[GameSessionService] Story ${storyId} is not available`);
       throw new Error(`Story ${storyId} is not available`);
     }
+    console.log('[GameSessionService] Story metadata loaded');
 
     // Validate story content
     const validation = await this.config.validationService.validateStory(storyId);
+    console.log('[GameSessionService] validation:', validation);
     if (!validation.valid) {
+      console.error(`[GameSessionService] Story ${storyId} has validation errors`);
       throw new Error(`Story ${storyId} has validation errors and cannot be started`);
     }
+    console.log('[GameSessionService] Story content validated');
 
     // Check concurrent session limits
     const playerActiveSessions = Array.from(this.activeSessions.values())
       .filter(session => session.playerId === playerId && session.status === 'active');
     
     if (playerActiveSessions.length >= this.config.maxConcurrentSessions) {
+      console.error(`[GameSessionService] Player ${playerId} has reached the maximum number of concurrent sessions`);
       throw new Error(`Player ${playerId} has reached the maximum number of concurrent sessions (${this.config.maxConcurrentSessions})`);
+    }
+    console.log('[GameSessionService] Concurrent session limit checked');
+
+    // Ensure player exists in database
+    let playerExists = false;
+    try {
+      await this.config.database.getPlayerProfile(playerId);
+      console.log('[GameSessionService] Player profile exists');
+      playerExists = true;
+    } catch (error) {
+      // Player doesn't exist, create a basic profile
+      console.log('[GameSessionService] Creating new player profile');
+      await this.config.database.createPlayerProfile({
+        id: playerId,
+        username: `Player_${playerId.slice(-6)}`, // Use last 6 chars of ID as username
+        preferences: {
+          difficulty: 'medium',
+          narrativeStyle: 'descriptive',
+          aiPersonality: 'helpful',
+        },
+        achievements: [],
+        totalPlayTime: 0,
+        storiesPlayed: 0,
+        storiesCompleted: 0,
+      });
+      console.log('[GameSessionService] Player profile created');
+      playerExists = false;
+    }
+
+    // Small delay to ensure player is committed if newly created
+    if (!playerExists) {
+      await new Promise(resolve => setTimeout(resolve, 10));
     }
 
     // Initialize story session
     const storyContent = await this.config.storyLoader.initializeStory(storyId, playerId);
+    console.log('[GameSessionService] storyContent:', storyContent);
+    console.log('[GameSessionService] Story session initialized');
 
     // Create new session
     const sessionId = uuidv4();
@@ -150,7 +192,7 @@ export class GameSessionService {
           beatsCompleted: 0,
           choicesMade: 0,
           averageResponseTime: 0,
-          sessionStarted: Date.now()
+          sessionStarted: new Date()
         }
       },
       settings: {
@@ -162,16 +204,19 @@ export class GameSessionService {
         ...settings
       }
     };
+    console.log('[GameSessionService] Session object created:', session);
 
     // Store session
     this.activeSessions.set(sessionId, session);
     await this.persistSession(session);
+    console.log('[GameSessionService] Session persisted');
 
     // Set up session management
     this.setupSessionTimeout(sessionId);
     if (session.settings.autoSave) {
       this.setupAutoSave(sessionId);
     }
+    console.log('[GameSessionService] Session management set up');
 
     // Notify subscribers
     this.notifySubscribers(sessionId, {
@@ -180,6 +225,7 @@ export class GameSessionService {
       data: { status: 'active', created: true },
       timestamp: new Date()
     });
+    console.log('[GameSessionService] Subscribers notified');
 
     return session;
   }
@@ -241,6 +287,7 @@ export class GameSessionService {
     }
 
     const startTime = Date.now();
+    let interaction: PlayerInteraction | undefined;
 
     try {
       // Update session activity
@@ -248,7 +295,7 @@ export class GameSessionService {
       this.refreshSessionTimeout(action.sessionId);
 
       // Record player interaction
-      const interaction: PlayerInteraction = {
+      interaction = {
         id: uuidv4(),
         gameId: action.sessionId,
         playerId: action.playerId,
@@ -314,7 +361,9 @@ export class GameSessionService {
 
       // Try to store error response if interaction was created
       try {
-        await this.config.database.storeResponse(interaction.id, errorResponse);
+        if (interaction) {
+          await this.config.database.storeResponse(interaction.id, errorResponse);
+        }
       } catch (storeError) {
         // If interaction wasn't created yet, create a temporary ID
         const tempId = uuidv4();
@@ -356,7 +405,7 @@ export class GameSessionService {
         isCompleted: false
       })),
       exitTransitions: [], // Would be populated from exitConditions
-      aiGuidance: storyContent.aiGuidance,
+      aiGuidance: storyContent.aiGuidance as any,
       isInitial: storyContent.currentBeat.act === 1,
       isEnding: false
     };
@@ -389,10 +438,10 @@ export class GameSessionService {
       playerId,
       storyId: session.storyId,
       saveName,
-      gameState: session.sessionData.storyProgress,
+      gameState: session.sessionData.storyProgress as any,
       currentBeatId: session.currentBeatId,
       createdAt: new Date(),
-      description
+      ...(description && { description })
     };
 
     await this.config.database.saveGame(gameSave);
@@ -784,7 +833,7 @@ export class GameSessionService {
   private calculateTotalPlayTime(session: GameSession): number {
     const now = Date.now();
     const sessionStart = session.sessionData.statistics.sessionStarted;
-    return session.sessionData.statistics.totalPlayTime + (now - sessionStart);
+    return session.sessionData.statistics.totalPlayTime + (now - sessionStart.getTime());
   }
 
   private calculateAverageSessionLength(sessions: GameSession[]): number {
@@ -798,16 +847,12 @@ export class GameSessionService {
   }
 
   private async persistSession(session: GameSession): Promise<void> {
-    // Store session in database
-    // This would use the HybridDatabase to store session state
-    console.log(`Persisting session ${session.id} for player ${session.playerId}`);
+    await this.config.database.createSession(session.id, session);
   }
 
   private async loadSessionFromDatabase(sessionId: string): Promise<GameSession | null> {
-    // Load session from database
-    // This would query the HybridDatabase for stored session
-    console.log(`Loading session ${sessionId} from database`);
-    return null;
+    const sessionData = await this.config.database.getSession(sessionId);
+    return sessionData ? (sessionData.sessionData as GameSession) : null;
   }
 
   private async loadPlayerSessionsFromDatabase(playerId: string): Promise<GameSession[]> {

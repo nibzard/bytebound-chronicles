@@ -73,3 +73,6 @@ local-config.json
 
 # Husky
 .husky/_
+
+# Claude Code local settings (per-user permission state)
+.claude/settings.local.json

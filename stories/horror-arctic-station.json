@@ -8,7 +8,7 @@
     "gameStyle": "horror-survival",
     "difficulty": "hard",
     "estimatedLength": 90,
-    "tags": ["horror", "survival", "psychological", "isolation", "supernatural"],
+    "tags": ["horror", "survival", "psychological", "supernatural"],
     "contentWarnings": ["horror themes", "psychological tension", "isolation anxiety", "body horror"],
     "playerInputMode": {
       "primary": "hybrid",
@@ -100,7 +100,7 @@
       "description": "Your supply helicopter is forced down by the worsening storm.",
       "setting": {
         "location": "research_station_exterior",
-        "timeOfDay": "late_afternoon",
+        "timeOfDay": "afternoon",
         "weather": "blizzard",
         "atmosphere": "isolated, foreboding",
         "lighting": "dim_natural"

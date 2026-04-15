@@ -32,7 +32,43 @@ const mockValidationService = {
 const mockDatabase = {
   storeInteraction: vi.fn(),
   storeResponse: vi.fn(),
-  saveGame: vi.fn()
+  saveGame: vi.fn(),
+  createPlayerProfile: vi.fn(),
+  getPlayerProfile: vi.fn(),
+  updatePlayerProfile: vi.fn(),
+  deletePlayerProfile: vi.fn(),
+  loadGame: vi.fn(),
+  getPlayerSaves: vi.fn(),
+  deleteSave: vi.fn(),
+  updateStoryProgress: vi.fn(),
+  getStoryProgress: vi.fn(),
+  storeStoryMetadata: vi.fn(),
+  getStoryMetadata: vi.fn(),
+  storeStoryCatalog: vi.fn(),
+  getStoryCatalog: vi.fn(),
+  recordAnalytics: vi.fn(),
+  getAnalytics: vi.fn(),
+  getGameSessionContext: vi.fn(),
+  batchStoreInteractions: vi.fn(),
+  syncStores: vi.fn(),
+  performCleanup: vi.fn(),
+  getStats: vi.fn(),
+  healthCheck: vi.fn(),
+  backup: vi.fn(),
+  optimize: vi.fn(),
+  vacuum: vi.fn(),
+  close: vi.fn(),
+  transaction: vi.fn(),
+  sqliteTransaction: vi.fn(),
+  reset: vi.fn(),
+  isInitialized: vi.fn(),
+  createSession: vi.fn(),
+  updateSessionActivity: vi.fn(),
+  endSession: vi.fn(),
+  getActiveSessions: vi.fn(),
+  getSession: vi.fn(),
+  recordAIUsage: vi.fn(),
+  getAIMetrics: vi.fn(),
 } as any;
 
 describe('GameSessionService', () => {
@@ -145,7 +181,7 @@ describe('GameSessionService', () => {
       expect(session.status).toBe('active');
       expect(session.currentBeatId).toBe('start');
       expect(session.settings.difficulty).toBe('medium');
-      expect(typeof session.sessionData.statistics.sessionStarted).toBe('number');
+      expect(session.sessionData.statistics.sessionStarted).toBeInstanceOf(Date);
 
       expect(mockMetadataService.getStoryMetadata).toHaveBeenCalledWith('test-story');
       expect(mockValidationService.validateStory).toHaveBeenCalledWith('test-story');

@@ -10,7 +10,7 @@
 import { readFile, readdir, stat } from 'fs/promises';
 import { join, extname } from 'path';
 import { validateByteboundGame, type ByteboundGame } from '../validation/game-schema-validator.js';
-import { StoryMetadata, StoryFilters } from '../types/story.js';
+import { StoryMetadata, StoryFilters, GameDifficulty } from '../types/story.js';
 import { HybridDatabase } from '../database/HybridDatabase.js';
 
 export interface StoryMetadataWithAvailability extends StoryMetadata {
@@ -185,7 +185,7 @@ export class StoryMetadataService {
             description: 'Story file could not be processed',
             author: 'Unknown',
             version: '0.0.0',
-            difficulty: 'easy',
+            difficulty: 'easy' as GameDifficulty,
             estimatedLength: 0,
             tags: ['invalid'],
             language: 'en',
@@ -288,7 +288,7 @@ export class StoryMetadataService {
         fileSize: fileStats.size,
         lastModified: fileStats.mtime,
         validationStatus,
-        validationErrors: validationErrors.length > 0 ? validationErrors : undefined
+        ...(validationErrors.length > 0 ? { validationErrors } : {}),
       };
     } catch (error) {
       throw new Error(`Failed to extract metadata from ${filePath}: ${error}`);

@@ -67,7 +67,7 @@ export interface DifficultySettings {
   resourceModifier?: number;
 }
 
-export type RequirementType = "stat" | "item" | "objective" | "choice" | "character" | "beat" | "flag";
+export type RequirementType = "stat" | "item" | "objective" | "choice" | "character" | "beat" | "flag" | "relationship";
 export type ComparisonOperator = ">=" | "<=" | ">" | "<" | "==" | "!=";
 
 export interface Requirement {

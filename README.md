@@ -14,27 +14,33 @@ Bytebound Chronicles is an interactive terminal-based adventure game engine that
 - **Multi-Model Integration**: Google Gemini 2.5 + Claude 4 for optimal performance and empathy
 - **Professional Prompt System**: Handlebars templating with context-aware generation
 - **Spoiler-Free Story Loading**: Progressive story revelation without spoilers
-- **Real-Time Gameplay**: WebSocket-based communication for live updates
+- **Real-Time API**: Production-ready Fastify server with WebSocket support
+- **Interactive Documentation**: Swagger UI at `/docs` with comprehensive API reference
+- **Request Validation**: Type-safe Zod validation for all API endpoints
 - **Hybrid Database System**: LMDB + SQLite + Turso for optimal performance
 - **Terminal UI**: Rich terminal experience built with React Ink
 
 ## Architecture
 
-- **API-First Design**: Separation of game logic from interface
+- **API-First Design**: RESTful API with comprehensive WebSocket real-time communication
 - **Role-Based AI Models**: `PRIMARY_NARRATIVE`, `FAST_INTENT`, `EMPATHETIC_ESCALATION`, `CREATIVE_ESCALATION`
 - **Intelligent Escalation**: Automatic frustration detection with empathetic model switching
 - **Professional Prompt System**: Handlebars templates with custom helpers for context injection
 - **Progressive Story Loading**: Just-in-time content loading based on player progress
+- **Production-Ready API**: Fastify server with Zod validation, structured error handling, and OpenAPI docs
+- **Real-Time Events**: WebSocket connection management for live game updates and AI status
 - **Hybrid Database Strategy**: LMDB for high-frequency data, SQLite for structured queries
 - **Cross-Device Sync**: Optional cloud synchronization with Turso
 
 ## Technology Stack
 
-- **Backend**: Node.js, TypeScript, Fastify
-- **Database**: LMDB, SQLite, Turso
-- **Frontend**: React Ink, WebSocket
-- **AI**: Google Gemini, Anthropic Claude
-- **Testing**: Vitest, Supertest
+- **Backend**: Node.js 20+, TypeScript 5.0+, Fastify 4.x
+- **API**: RESTful endpoints, WebSocket real-time communication, OpenAPI/Swagger documentation
+- **Validation**: Zod schemas, structured error handling, type-safe request/response validation
+- **Database**: LMDB, SQLite, Turso (hybrid architecture for optimal performance)
+- **Frontend**: React Ink, WebSocket client, terminal UI components
+- **AI**: Google Gemini 2.5, Anthropic Claude 4, intelligent model orchestration
+- **Testing**: Vitest, Supertest, comprehensive unit and integration tests
 
 ## Development Status
 
@@ -67,6 +73,15 @@ Bytebound Chronicles is an interactive terminal-based adventure game engine that
 - Complete game session lifecycle management
 - Real-time session updates and player action processing
 
+✅ **Phase 4 Complete: API Development**
+- Production-ready Fastify server with comprehensive middleware
+- RESTful API endpoints with complete CRUD operations
+- WebSocket real-time communication system
+- Zod-based request validation for all endpoints
+- Structured error handling with custom error classes
+- Interactive API documentation with Swagger UI at `/docs`
+- Health monitoring and system metrics at `/health`
+
 See [`TODO.md`](./TODO.md) for detailed development roadmap and [`terminal_adventure_mvp_spec.md`](./terminal_adventure_mvp_spec.md) for the complete technical specification.
 
 ## Getting Started
@@ -88,12 +103,17 @@ npm run setup-db
 
 # Development
 npm run dev:all    # Start both API and client
-npm run dev        # API server only
+npm run dev        # API server only (http://localhost:3000)
 npm run dev:client # Terminal client only
+
+# API Documentation
+# Visit http://localhost:3000/docs for interactive Swagger UI
+# Visit http://localhost:3000/health for system status
 
 # Testing
 npm test           # All tests
 npm run test:unit  # Unit tests only
+npm run test:integration # API integration tests
 npm run typecheck  # TypeScript validation
 npm run lint       # Code quality check
 ```
@@ -107,10 +127,22 @@ npm run lint       # Code quality check
 - ✅ Universal game schema with TypeScript types and validation
 - ✅ Complete story management system with spoiler prevention
 - ✅ Game session service with real-time updates
-- ⏳ API endpoints and WebSocket integration
-- ⏳ Terminal client interface
+- ✅ Production-ready API with RESTful endpoints and WebSocket support
+- ✅ Interactive API documentation and comprehensive validation
+- 🔄 Terminal client interface (basic structure implemented)
 
-**Overall Progress: 40% Complete (3 of 8 phases)**
+**Overall Progress: 62% Complete (4 of 8 phases)**
+
+### API Endpoints
+
+The API server provides comprehensive endpoints for game management:
+
+- **Stories**: `GET /api/stories` (with filtering), `GET /api/stories/:id`
+- **Players**: `POST /api/players`, `GET /api/players/:id`, `PUT /api/players/:id`, `DELETE /api/players/:id`
+- **Games**: `POST /api/games`, `GET /api/games/:id`, `PUT /api/games/:id/pause|resume`, `POST /api/games/:id/save`, `DELETE /api/games/:id`
+- **Actions**: `POST /api/games/:id/actions` (process player inputs)
+- **WebSocket**: `ws://localhost:3000/ws` (real-time game events)
+- **Documentation**: `GET /docs` (Swagger UI), `GET /health` (system status)
 
 ## Universal Game Schema
 
